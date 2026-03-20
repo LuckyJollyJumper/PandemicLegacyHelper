@@ -1,20 +1,53 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using System;
 
 public class CardPrefab : MonoBehaviour
 {
-    private CardData Data;
+    private GameObject ParentDeck; // The deck that the CardData is in 
+    public CardData Data;
     [SerializeField] private TMPro.TextMeshProUGUI CardNameText;
     [SerializeField] private TMPro.TextMeshProUGUI CardPercentageText;
     [SerializeField] private TMPro.TextMeshProUGUI CardAmountText;
     [SerializeField] private Image backgroundImage;
+    [SerializeField] private TMPro.TextMeshProUGUI ButtonText;
+
+    [HideInInspector] public event Action OnButtonClicked;
     
-    public void SetCardPrefab(CardData c, float percentage, int amount){
+    public void SetCardPrefab(CardData c, int amount){
         this.Data = c;
         this.CardNameText.text = Data.CardName;
-        this.CardPercentageText.text = $"{percentage}";
-        this.CardAmountText.text = $"{amount}";
-        this.backgroundImage.color = Color.white;
+        SetAmount(amount);
+        this.backgroundImage.color = Data.GetCardColour();
     }
 
+    public void SetProbability(float prob){ 
+        this.Data.Probability = prob;
+        this.CardPercentageText.text = $"{Data.Probability}%";
+    }
+    public void LowerAmountByOne(){
+        this.Data.Amount--;
+        this.CardAmountText.text = $"{Data.Amount}";
+        Debug.Log($"{Data.Amount}");
+    }
+    public void AddAmountByOne(){
+        this.Data.Amount ++;
+        this.CardAmountText.text = $"{Data.Amount}";
+        Debug.Log($"{Data.Amount}");
+    }
+    public void SetAmount(int amount){
+        this.Data.Amount = amount;
+        this.CardAmountText.text = $"{Data.Amount}";
+    }
+    public int GetAmount(){
+        return Data.Amount;
+    }
+
+    public void ChangeButton(bool setToRemove){
+        if (setToRemove){ this.ButtonText.text = "X";}
+        else{  this.ButtonText.text = ">"; }
+    }
+
+    public void ButtonClicked(){ OnButtonClicked?.Invoke(); }
 }

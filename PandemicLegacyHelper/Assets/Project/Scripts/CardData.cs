@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CardData
 {
-    public enum CardColour {Blue, Black, Yellow};
+    public enum CardColour {Blue, Black, Yellow, Green};
 
     public string CardName;
     public CardColour Colour;
@@ -31,6 +31,7 @@ public class CardData
             CardData.CardColour.Blue => new Color(0.284f, 0.742f, 0.893f),
             CardData.CardColour.Black => new Color(0.284f, 0.284f, 0.284f),
             CardData.CardColour.Yellow => new Color(0.953f, 0.973f, 0.333f),
+            CardData.CardColour.Green => new Color(0.24f, 0.56f, 0.302f),
             _ => new Color(64f,64f,64f)
         };
     }

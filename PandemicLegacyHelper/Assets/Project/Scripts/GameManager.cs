@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject UnknownDeckObject;
     [SerializeField] private GameObject PreviousKnownDeckObject;
     [SerializeField] private GameObject OpenDeckObject;
+    [SerializeField] private GameObject PopUpObject;
     [Header("Debug")]
     [SerializeField] private bool DebugMode;
     private string DebugID = "[GameManager]";
@@ -90,8 +91,9 @@ public class GameManager : MonoBehaviour
 
         // Update probabilities of all decks
         SetAllProbabilities(UnknownDeck);
+        SortListByProbability(UnknownDeck);
         SetAllProbabilities(PreviousKnownDeck);
-        SetAllProbabilities(OpenDeck);
+        SortListByProbability(PreviousKnownDeck);
     }
     public void AddCardToKnownDeck(CardData cardData, int amount){
         // PreviousKnownDeck.Add(cardData);
@@ -111,7 +113,10 @@ public class GameManager : MonoBehaviour
     public void RemoveCardFromOpenDeck(GameObject card){
         
         CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
-        if (cardPrefab.GetAmount() == 1){ Destroy(card); }
+        if (cardPrefab.GetAmount() == 1){ 
+            Destroy(card); 
+            OpenDeck.Remove(card);
+        }
         else{ cardPrefab.LowerAmountByOne(); }
         SetAllProbabilities(OpenDeck);
     }
@@ -138,6 +143,9 @@ public class GameManager : MonoBehaviour
     }
     public void SortListByProbability(List<GameObject> list){
         list.Sort((a, b) => b.GetComponent<CardPrefab>().Data.Probability.CompareTo(a.GetComponent<CardPrefab>().Data.Probability));
+        for (int i = 0; i < list.Count; i++){
+            list[i].transform.SetSiblingIndex(i);
+        }
     }
 
 
@@ -146,5 +154,29 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void AddCard(){
         
+    }
+    /// <summary>
+    /// Called by the Pandemic button. Puts all cards from the OpenDeck into the PreviousKnowndeck
+    /// </summary>
+    public void ReshuffleCards(){
+        for (int i = 0; i < OpenDeck.Count; i++){
+            GameObject card = OpenDeck[i];
+            CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
+
+            // Add card to PreviousKnownDeck
+            (bool exists, GameObject foundCard) = CardExistsInList(PreviousKnownDeck, cardPrefab.Data);
+            if (exists){
+                foundCard.GetComponent<CardPrefab>().AddAmountByOne();
+                if(DebugMode){Debug.Log($"{DebugID} Added 1 to {foundCard.GetComponent<CardPrefab>().Data.CardName} in PreviousKnownDeck, new: {foundCard.GetComponent<CardPrefab>().Data.Amount}");}
+            }
+            else{
+                GameObject newCard = AddCardToUI(cardPrefab.Data, cardPrefab.GetAmount(), PreviousKnownDeckObject.transform);
+                newCard.GetComponent<CardPrefab>().ChangeButton(false);
+                PreviousKnownDeck.Add(newCard);
+                if(DebugMode){Debug.Log($"{DebugID} Added new card {newCard.GetComponent<CardPrefab>().Data.CardName} to PreviousKnownDeck");}
+            }
+
+            Destroy(card);
+        }
     }
 }

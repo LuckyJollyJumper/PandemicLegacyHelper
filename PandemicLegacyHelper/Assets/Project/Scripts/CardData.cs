@@ -9,6 +9,17 @@ public class CardData
     public int Amount;
     public float Probability;
 
+    /// <summary>
+    /// Used to create a copy of the CardData, so that we can have multiple instances of the same card with different probabilities and amounts.
+    /// </summary>
+    public CardData Clone(){
+        return new CardData {
+            CardName = this.CardName,
+            Colour = this.Colour,
+            Amount = this.Amount,
+            Probability = this.Probability
+        };
+    }
 
     /// <summary>
     /// Used to get a unity Color matched with CardColour for UI elements.

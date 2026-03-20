@@ -104,13 +104,14 @@ public class GameManager : MonoBehaviour
     }
     public GameObject AddCardToUI(CardData cardData, int amount, Transform newParent){
         GameObject card = Instantiate(CardPrefabObject, newParent);
-        card.GetComponent<CardPrefab>().SetCardPrefab(cardData, amount);
+        card.GetComponent<CardPrefab>().SetCardPrefab(cardData.Clone(), amount);
         return card;
     }
 
     public void RemoveCardFromOpenDeck(GameObject card){
+        
         CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
-        if (cardPrefab.GetAmount() == 1){ Destroy(cardPrefab); }
+        if (cardPrefab.GetAmount() == 1){ Destroy(card); }
         else{ cardPrefab.LowerAmountByOne(); }
         SetAllProbabilities(OpenDeck);
     }
@@ -134,6 +135,9 @@ public class GameManager : MonoBehaviour
             //Debug.Log($"{card.GetComponent<CardPrefab>().Data.CardName}: {size}");
         }
         return size;
+    }
+    public void SortListByProbability(List<GameObject> list){
+        list.Sort((a, b) => b.GetComponent<CardPrefab>().Data.Probability.CompareTo(a.GetComponent<CardPrefab>().Data.Probability));
     }
 
 

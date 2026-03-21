@@ -3,6 +3,9 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System;
 
+/// <summary>
+/// Class used by the Card Prefab. Represents the data and amount of a card and holds the CardData
+/// </summary>
 public class CardPrefab : MonoBehaviour
 {
     private GameObject ParentDeck; // The deck that the CardData is in 
@@ -40,9 +43,7 @@ public class CardPrefab : MonoBehaviour
         this.Data.Amount = amount;
         this.CardAmountText.text = $"{Data.Amount}";
     }
-    public int GetAmount(){
-        return Data.Amount;
-    }
+    public int GetAmount(){ return Data.Amount; }
 
     public void ChangeButton(bool setToRemove){
         if (setToRemove){ this.ButtonText.text = "X";}

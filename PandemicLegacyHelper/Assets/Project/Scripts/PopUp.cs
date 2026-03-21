@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Class used to control the inputfields and dropdowns and send it to the GameManager
+/// </summary>
 public class PopUp : MonoBehaviour
 {
     [Header("References")]
@@ -19,7 +22,6 @@ public class PopUp : MonoBehaviour
         string colour = this.CardColourInput.options[this.CardColourInput.value].text;
         CardData.CardColour cardColour = (CardData.CardColour) System.Enum.Parse(typeof(CardData.CardColour), colour);
         
-        Debug.Log($"{name}, {amount}, {colour}");
         this.GameManagerObject.AddCardToUnknownDeck(new CardData { CardName = name, Colour = cardColour }, amount);
 
         ClosePopUp();

@@ -139,7 +139,6 @@ public class GameManager : MonoBehaviour
         int size = 0;
         foreach (GameObject card in list){
             size += card.GetComponent<CardPrefab>().Data.Amount;
-            //Debug.Log($"{card.GetComponent<CardPrefab>().Data.CardName}: {size}");
         }
         return size;
     }

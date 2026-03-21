@@ -22,6 +22,8 @@ public class GameManager : MonoBehaviour
     
 
     void Start(){
+        PopUpObject.SetActive(false);
+
         CardData w = new() { CardName = "Washington", Colour = CardData.CardColour.Blue };
         AddCardToUnknownDeck(w, 3);
         w = new() { CardName = "New York",      Colour = CardData.CardColour.Blue };
@@ -152,7 +154,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Called by the button
     /// </summary>
-    public void AddCard(){
+    public void OpenPopUp(){
         if(DebugMode){Debug.Log($"{DebugID} Adding card");}
         PopUpObject.SetActive(true);
     }

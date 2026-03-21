@@ -4,20 +4,27 @@ using UnityEngine.UI;
 public class PopUp : MonoBehaviour
 {
     [Header("References")]
+    [SerializeField] private GameManager GameManagerObject;
     [SerializeField] private TMPro.TMP_InputField CardNameInput;
-    [SerializeField] private TMPro.TMP_InputField CardColourInput;
+    [SerializeField] private TMPro.TMP_Dropdown CardColourInput;
+    [SerializeField] private TMPro.TMP_Dropdown CardAmountInput;
     
-    [SerializeField] private TMPro.TMP_InputField CardAmountInput;
-    
-    void Start(){
-        this.gameObject.SetActive(false);
-    }
+     /// <summary>
+     /// Opens the pop up and allows the user to input a card, which is then added to the unknown deck.
+     /// The pop up is closed after the card is added.
+     /// </summary>
     public void OnSubmit(){
         string name = this.CardNameInput.text;
-        string text = this.CardAmountInput.text;
-        string colour = this.CardColourInput.text;
+        int amount = this.CardAmountInput.value + 1;
+        string colour = this.CardColourInput.options[this.CardColourInput.value].text;
+        CardData.CardColour cardColour = (CardData.CardColour) System.Enum.Parse(typeof(CardData.CardColour), colour);
         
-        // Submit here
+        Debug.Log($"{name}, {amount}, {colour}");
+        this.GameManagerObject.AddCardToUnknownDeck(new CardData { CardName = name, Colour = cardColour }, amount);
+
+        ClosePopUp();
+    }
+    public void ClosePopUp(){
         this.gameObject.SetActive(false);
     }
 }

@@ -153,7 +153,8 @@ public class GameManager : MonoBehaviour
     /// Called by the button
     /// </summary>
     public void AddCard(){
-        
+        if(DebugMode){Debug.Log($"{DebugID} Adding card");}
+        PopUpObject.SetActive(true);
     }
     /// <summary>
     /// Called by the Pandemic button. Puts all cards from the OpenDeck into the PreviousKnowndeck

@@ -18,11 +18,18 @@ public class CardPrefab : MonoBehaviour
 
     [HideInInspector] public event Action OnButtonClicked;
     
-    public void SetCardPrefab(CardData c, int amount){
+    public void SetCardPrefab(CardData card, int amount){
         this.OnButtonClicked += () => { GameManager.Instance.AddCardToOpenDeck(this.gameObject);};
-        this.Data = c;
+        this.Data = card;
         this.CardNameText.text = Data.CardName;
         SetAmount(amount);
+
+        Color c = new Color(0f,0f,0f);
+        if (Data.Colour == CardData.CardColour.Yellow){
+            this.CardAmountText.color = c;
+            this.CardPercentageText.color = c;
+            this.CardNameText.color = c;
+        }
         this.backgroundImage.color = Data.GetCardColour();
     }
 

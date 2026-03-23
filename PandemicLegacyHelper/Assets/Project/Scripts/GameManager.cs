@@ -7,6 +7,21 @@ using System;
 /// </summary>
 public class GameManager : MonoBehaviour
 {
+    private static GameManager instance;
+    public static GameManager Instance{ // Make sure only one instance of GameManager exists
+        get{
+            if (instance == null){
+                instance = FindFirstObjectByType<GameManager>();
+
+                if (instance == null){
+                    GameObject singleton = new GameObject(typeof(GameManager).ToString());
+                    instance = singleton.AddComponent<GameManager>();
+                    DontDestroyOnLoad(singleton);
+                }
+            }
+            return instance;
+        }
+    }
     [SerializeField] private GameObject CardPrefabObject;
     [SerializeField] public List<GameObject> UnknownDeck; //The part of the drawpile we have not reached yet
     [SerializeField] public List<GameObject> PreviousKnownDeck; // The part of the drawpile we know
@@ -23,39 +38,29 @@ public class GameManager : MonoBehaviour
 
     void Start(){
         PopUpObject.SetActive(false);
-
-        CardData w = new() { CardName = "Washington", Colour = CardData.CardColour.Blue };
-        AddCardToUnknownDeck(w, 3);
-        w = new() { CardName = "New York",      Colour = CardData.CardColour.Blue };
-        AddCardToUnknownDeck(w, 3);
-        w = new() { CardName = "Jacksonville",  Colour = CardData.CardColour.Yellow };
-        AddCardToUnknownDeck(w, 3);
-        w = new() { CardName = "London",        Colour = CardData.CardColour.Blue };
-        AddCardToUnknownDeck(w, 3);
-        w = new() { CardName = "Lagos",         Colour = CardData.CardColour.Yellow };
-        AddCardToUnknownDeck(w, 3);
-        w = new() { CardName = "Sao Paolo",     Colour = CardData.CardColour.Yellow };
-        AddCardToUnknownDeck(w, 3);
-        w = new() { CardName = "Istanbul",      Colour = CardData.CardColour.Black };
-        AddCardToUnknownDeck(w, 3);
-        w = new() { CardName = "Tripoli",       Colour = CardData.CardColour.Black };
-        AddCardToUnknownDeck(w, 3);
-        w = new() { CardName = "Cairo",         Colour = CardData.CardColour.Black };
-        AddCardToUnknownDeck(w, 3);
-
         PreviousKnownDeck = new();
+        UnknownDeck = new();
         OpenDeck = new();
+
+        LoadFromFile();
     }
 
-    /*
-     *  Functions used when adding user inputted cards
-     */
-    public void AddCardToUnknownDeck(CardData cardData, int amount){
+    //----------------------------------------------------------------------//
+    //----------Functions for adding and removing cards from decks----------//
+    //----------------------------------------------------------------------//
+
+     /// <summary>
+     /// Adds a cardData and amount to the UnknownDeck, used to load in new cards and setup
+     /// </summary>
+     /// <param name="cardData"></param>
+     /// <param name="amount"></param>
+    public void AddCardDataToUnknownDeck(CardData cardData, int amount){
+        (bool exists, GameObject foundCard) = CardExistsInList(UnknownDeck, cardData);
+        if (exists){
+            foundCard.GetComponent<CardPrefab>().AddAmount(1);
+            if(DebugMode){Debug.Log($"{DebugID} Added 1 to {foundCard.GetComponent<CardPrefab>().Data.CardName}, new: {foundCard.GetComponent<CardPrefab>().Data.Amount}");}
+        }
         GameObject card = AddCardToUI(cardData, amount, UnknownDeckObject.transform);
-        card.GetComponent<CardPrefab>().OnButtonClicked += () => { 
-            AddCardToOpenDeck(card); 
-            Debug.Log("--------------------------------");
-        };
 
         UnknownDeck.Add(card);
         SetAllProbabilities(UnknownDeck);
@@ -68,13 +73,12 @@ public class GameManager : MonoBehaviour
         // Add card to OpenDeck
         (bool exists, GameObject foundCard) = CardExistsInList(OpenDeck, cardPrefab.Data);
         if (exists){
-            foundCard.GetComponent<CardPrefab>().AddAmountByOne();
+            foundCard.GetComponent<CardPrefab>().AddAmount(1);
             if(DebugMode){Debug.Log($"{DebugID} Added 1 to {foundCard.GetComponent<CardPrefab>().Data.CardName}, new: {foundCard.GetComponent<CardPrefab>().Data.Amount}");}
         }
         else{
             GameObject newCard = AddCardToUI(cardPrefab.Data, 1, OpenDeckObject.transform);
             newCard.GetComponent<CardPrefab>().ChangeButton(true);
-            newCard.GetComponent<CardPrefab>().OnButtonClicked += () =>{ RemoveCardFromOpenDeck(newCard); };
             OpenDeck.Add(newCard);
             if(DebugMode){Debug.Log($"{DebugID} Added new card {newCard.GetComponent<CardPrefab>().Data.CardName}");}
         }
@@ -87,24 +91,42 @@ public class GameManager : MonoBehaviour
             if(DebugMode){Debug.Log($"{DebugID} Removed {card.GetComponent<CardPrefab>().Data.CardName}");}
         }
         else{
-            cardPrefab.LowerAmountByOne();
+            cardPrefab.SubtractAmount(1);
             if(DebugMode){Debug.Log($"{DebugID} Removed 1 from {card.GetComponent<CardPrefab>().Data.CardName}, new: {card.GetComponent<CardPrefab>().Data.Amount}");}
         }
 
-        // Update probabilities of all decks
+        // Update probabilities
         SetAllProbabilities(UnknownDeck);
         SortListByProbability(UnknownDeck);
-        SetAllProbabilities(PreviousKnownDeck);
-        SortListByProbability(PreviousKnownDeck);
-    }
-    public void AddCardToKnownDeck(CardData cardData, int amount){
-        // PreviousKnownDeck.Add(cardData);
     }
     public (bool, GameObject) CardExistsInList(List<GameObject> list, CardData cardData){
         foreach (GameObject card in list){
             if (card.GetComponent<CardPrefab>().Data.CardName == cardData.CardName){ return (true, card); }
         }
         return (false, null);
+    }
+    public void AddCardToDeck(GameObject card, int amount, Transform newParent, List<GameObject> newList){
+        var cardData = card.GetComponent<CardPrefab>().Data;
+        (bool exists, GameObject foundCard) = CardExistsInList(newList, cardData);
+        if (exists){
+            foundCard.GetComponent<CardPrefab>().AddAmount(amount);
+        }else{
+            GameObject newCard = AddCardToUI(cardData, amount, newParent);
+            newList.Add(newCard);
+        }
+    }
+    public void RemoveCardFromDeck(GameObject card, int amount, List<GameObject> oldList){
+        CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
+        (bool exists, _) = CardExistsInList(oldList, cardPrefab.Data);
+        if (exists){
+            if(cardPrefab.GetAmount() <= amount){ 
+                oldList.Remove(card);
+                Destroy(card);
+            }
+            else{ cardPrefab.SubtractAmount(amount); }
+        }
+        else{ if (DebugMode){ Debug.Log($"{DebugID} Could not remove card from list, does not exist"); } }
+        
     }
     public GameObject AddCardToUI(CardData cardData, int amount, Transform newParent){
         GameObject card = Instantiate(CardPrefabObject, newParent);
@@ -113,17 +135,19 @@ public class GameManager : MonoBehaviour
     }
 
     public void RemoveCardFromOpenDeck(GameObject card){
-        
         CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
         if (cardPrefab.GetAmount() == 1){ 
-            Destroy(card); 
             OpenDeck.Remove(card);
+            Destroy(card);
         }
-        else{ cardPrefab.LowerAmountByOne(); }
-        SetAllProbabilities(OpenDeck);
+        else{ cardPrefab.SubtractAmount(1); }
     }
 
 
+
+    //----------------------------------------------------------------------//
+    //-------Functions related to calculating probabilities of cards--------//
+    //----------------------------------------------------------------------//
 
     public void SetAllProbabilities(List<GameObject> list){
         int size = GetActualListSize(list);
@@ -150,35 +174,99 @@ public class GameManager : MonoBehaviour
     }
 
 
+
+    //----------------------------------------------------------------------//
+    //-----------------------Functions used by buttons----------------------//
+    //----------------------------------------------------------------------//
+
     /// <summary>
-    /// Called by the button
+    /// Called by the button AddInfectionCard. Opens the PopUp gameObject.
     /// </summary>
     public void OpenPopUp(){
-        if(DebugMode){Debug.Log($"{DebugID} Adding card");}
         PopUpObject.SetActive(true);
     }
     /// <summary>
     /// Called by the Pandemic button. Puts all cards from the OpenDeck into the PreviousKnowndeck
     /// </summary>
-    public void ReshuffleCards(){
-        for (int i = 0; i < OpenDeck.Count; i++){
+    public void MoveAllCardsToPreviousknownDeck(){
+        for (int i = OpenDeck.Count - 1; i >= 0; i--){
             GameObject card = OpenDeck[i];
             CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
+            int amount = cardPrefab.GetAmount();
+            Debug.Log($"{DebugID} Moving {cardPrefab.Data.CardName} x{amount} to PreviousKnownDeck");
 
-            // Add card to PreviousKnownDeck
-            (bool exists, GameObject foundCard) = CardExistsInList(PreviousKnownDeck, cardPrefab.Data);
+            AddCardToDeck(card, amount, PreviousKnownDeckObject.transform, PreviousKnownDeck);
+            RemoveCardFromDeck(card, amount, OpenDeck);
+        }
+
+        SetAllProbabilities(PreviousKnownDeck);
+        SortListByProbability(PreviousKnownDeck);
+    }
+
+     /// <summary>
+    /// Will move all cards to UnknownDeck
+    /// </summary>
+    public void ResetAllCards(){
+        // TODO move all cards to UnknownDeck
+        for(int i = 0; i < OpenDeck.Count; i++){
+            CardPrefab cardPrefab = OpenDeck[i].GetComponent<CardPrefab>();
+            (bool exists, GameObject foundCard) = CardExistsInList(OpenDeck, cardPrefab.Data);
             if (exists){
-                foundCard.GetComponent<CardPrefab>().AddAmountByOne();
-                if(DebugMode){Debug.Log($"{DebugID} Added 1 to {foundCard.GetComponent<CardPrefab>().Data.CardName} in PreviousKnownDeck, new: {foundCard.GetComponent<CardPrefab>().Data.Amount}");}
+                foundCard.GetComponent<CardPrefab>().AddAmount(cardPrefab.GetAmount());
+                OpenDeck.Remove(OpenDeck[i]);
+                Destroy(cardPrefab.gameObject);
             }
             else{
-                GameObject newCard = AddCardToUI(cardPrefab.Data, cardPrefab.GetAmount(), PreviousKnownDeckObject.transform);
-                newCard.GetComponent<CardPrefab>().ChangeButton(false);
-                PreviousKnownDeck.Add(newCard);
-                if(DebugMode){Debug.Log($"{DebugID} Added new card {newCard.GetComponent<CardPrefab>().Data.CardName} to PreviousKnownDeck");}
+                AddCardToUI(cardPrefab.Data, cardPrefab.GetAmount(), UnknownDeckObject.transform);
+                UnknownDeck.Add(OpenDeck[i]);
+                OpenDeck.Remove(OpenDeck[i]);
             }
-
-            Destroy(card);
+            
         }
+    }
+
+
+
+    //----------------------------------------------------------------------//
+    //-----------Functions for starting and stopping application------------//
+    //----------------------------------------------------------------------//
+    public void SaveToFile(){
+        // TODO: save all lists
+        CardDataSaver.SaveToFile(UnknownDeck);
+    }
+    public void LoadFromFile(){
+        (bool exists, List<CardData> loadedCards) = CardDataSaver.LoadFromFile();
+        if (exists){
+            foreach (CardData card in loadedCards){
+                AddCardDataToUnknownDeck(card, card.Amount);
+            }
+            if (DebugMode){ Debug.Log($"{DebugID} Loaded cards from memory"); }
+        }
+        else{
+            CardData w = new() { CardName = "Washington", Colour = CardData.CardColour.Blue };
+            AddCardDataToUnknownDeck(w, 3);
+            w = new() { CardName = "New York",      Colour = CardData.CardColour.Blue };
+            AddCardDataToUnknownDeck(w, 3);
+            w = new() { CardName = "Jacksonville",  Colour = CardData.CardColour.Yellow };
+            AddCardDataToUnknownDeck(w, 3);
+            w = new() { CardName = "London",        Colour = CardData.CardColour.Blue };
+            AddCardDataToUnknownDeck(w, 3);
+            w = new() { CardName = "Lagos",         Colour = CardData.CardColour.Yellow };
+            AddCardDataToUnknownDeck(w, 3);
+            w = new() { CardName = "Sao Paolo",     Colour = CardData.CardColour.Yellow };
+            AddCardDataToUnknownDeck(w, 3);
+            w = new() { CardName = "Istanbul",      Colour = CardData.CardColour.Black };
+            AddCardDataToUnknownDeck(w, 3);
+            w = new() { CardName = "Tripoli",       Colour = CardData.CardColour.Black };
+            AddCardDataToUnknownDeck(w, 3);
+            w = new() { CardName = "Cairo",         Colour = CardData.CardColour.Black };
+            AddCardDataToUnknownDeck(w, 3);
+            if (DebugMode){ Debug.Log($"{DebugID} File not found on device, creating new file"); }
+            SaveToFile();
+        }
+    }
+    public void QuitGame(){
+        SaveToFile();
+        Application.Quit();
     }
 }

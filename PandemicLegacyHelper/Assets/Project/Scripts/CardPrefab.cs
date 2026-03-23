@@ -19,6 +19,7 @@ public class CardPrefab : MonoBehaviour
     [HideInInspector] public event Action OnButtonClicked;
     
     public void SetCardPrefab(CardData c, int amount){
+        this.OnButtonClicked += () => { GameManager.Instance.AddCardToOpenDeck(this.gameObject);};
         this.Data = c;
         this.CardNameText.text = Data.CardName;
         SetAmount(amount);
@@ -29,15 +30,13 @@ public class CardPrefab : MonoBehaviour
         this.Data.Probability = prob;
         this.CardPercentageText.text = $"{Data.Probability}%";
     }
-    public void LowerAmountByOne(){
-        this.Data.Amount--;
+    public void AddAmount(int amount){
+        this.Data.Amount += amount;
         this.CardAmountText.text = $"{Data.Amount}";
-        Debug.Log($"{Data.Amount}");
     }
-    public void AddAmountByOne(){
-        this.Data.Amount ++;
+    public void SubtractAmount(int amount){
+        this.Data.Amount -= amount;
         this.CardAmountText.text = $"{Data.Amount}";
-        Debug.Log($"{Data.Amount}");
     }
     public void SetAmount(int amount){
         this.Data.Amount = amount;
@@ -46,8 +45,15 @@ public class CardPrefab : MonoBehaviour
     public int GetAmount(){ return Data.Amount; }
 
     public void ChangeButton(bool setToRemove){
-        if (setToRemove){ this.ButtonText.text = "X";}
-        else{  this.ButtonText.text = ">"; }
+        OnButtonClicked = null;
+        if (setToRemove){ 
+            this.OnButtonClicked += () => { GameManager.Instance.RemoveCardFromOpenDeck(this.gameObject); };
+            this.ButtonText.text = "X";
+        }
+        else{
+            this.OnButtonClicked += () => { GameManager.Instance.AddCardToOpenDeck(this.gameObject);};
+            this.ButtonText.text = ">"; 
+        }
     }
 
     public void ButtonClicked(){ OnButtonClicked?.Invoke(); }

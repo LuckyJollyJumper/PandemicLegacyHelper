@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// Class used to store the data of a single card
+/// </summary>
+[System.Serializable]
 public class CardData
 {
     public enum CardColour {Blue, Black, Yellow, Green};

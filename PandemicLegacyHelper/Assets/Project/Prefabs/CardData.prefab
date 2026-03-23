@@ -123,7 +123,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
   m_IgnoreLayout: 0
   m_MinWidth: -1
-  m_MinHeight: 50
+  m_MinHeight: 80
   m_PreferredWidth: -1
   m_PreferredHeight: 100
   m_FlexibleWidth: -1
@@ -141,6 +141,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a7ac80c06d16ae4ebd8571db8afa559, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CardPrefab
+  Data:
+    CardName: 
+    Colour: 0
+    Amount: 0
+    Probability: 0
   CardNameText: {fileID: 4933118413241278152}
   CardPercentageText: {fileID: 7943664551184083106}
   CardAmountText: {fileID: 2375967944926113316}

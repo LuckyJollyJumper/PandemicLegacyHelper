@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject PreviousKnownDeckObject;
     [SerializeField] private GameObject OpenDeckObject;
     [SerializeField] private GameObject PopUpObject;
+    [SerializeField] private GameObject SettingsObject;
     [Header("Debug")]
     [SerializeField] private bool DebugMode;
     private string DebugID = "[GameManager]";
@@ -38,6 +39,7 @@ public class GameManager : MonoBehaviour
 
     void Start(){
         PopUpObject.SetActive(false);
+        SettingsObject.SetActive(false);
         PreviousKnownDeck = new();
         UnknownDeck = new();
         OpenDeck = new();
@@ -186,6 +188,13 @@ public class GameManager : MonoBehaviour
         PopUpObject.SetActive(true);
     }
     /// <summary>
+    /// Called by the settings button.
+    /// </summary>
+    public void OpenCloseSettings(){
+        if (SettingsObject.activeSelf){ SettingsObject.SetActive(false); }
+        else{ SettingsObject.SetActive(true); }
+    }
+    /// <summary>
     /// Called by the Pandemic button. Puts all cards from the OpenDeck into the PreviousKnowndeck
     /// </summary>
     public void MoveAllCardsToPreviousknownDeck(){
@@ -201,28 +210,43 @@ public class GameManager : MonoBehaviour
 
         SetAllProbabilities(PreviousKnownDeck);
         SortListByProbability(PreviousKnownDeck);
+        if (DebugMode){ Debug.Log($"{DebugID} Pressed Pandemic button; Moved all cards in Open Deck to PreviousKnownDeck"); }
     }
 
-     /// <summary>
-    /// Will move all cards to UnknownDeck
+    /// <summary>
+    /// Will move all cards to UnknownDeck to reset to start a new month. Called from the Settings resetMonth button
     /// </summary>
     public void ResetAllCards(){
         // TODO move all cards to UnknownDeck
-        for(int i = 0; i < OpenDeck.Count; i++){
-            CardPrefab cardPrefab = OpenDeck[i].GetComponent<CardPrefab>();
-            (bool exists, GameObject foundCard) = CardExistsInList(OpenDeck, cardPrefab.Data);
-            if (exists){
-                foundCard.GetComponent<CardPrefab>().AddAmount(cardPrefab.GetAmount());
-                OpenDeck.Remove(OpenDeck[i]);
-                Destroy(cardPrefab.gameObject);
-            }
-            else{
-                AddCardToUI(cardPrefab.Data, cardPrefab.GetAmount(), UnknownDeckObject.transform);
-                UnknownDeck.Add(OpenDeck[i]);
-                OpenDeck.Remove(OpenDeck[i]);
-            }
-            
+        MoveAllCardsToUnknownDeck(OpenDeck);
+        MoveAllCardsToUnknownDeck(PreviousKnownDeck);
+        if (DebugMode){ Debug.Log($"{DebugID} Pressed Reset month button; Moved all cards to the UnknownDeck"); }
+        OpenCloseSettings();
+    }
+    private void MoveAllCardsToUnknownDeck(List<GameObject> list){
+        for(int i = list.Count - 1; i >= 0; i--){
+            GameObject card = list[i];
+            CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
+            int amount = cardPrefab.GetAmount();
+
+            AddCardToDeck(card, amount, UnknownDeckObject.transform, UnknownDeck);
+            RemoveCardFromDeck(card, amount, list);
         }
+
+        SetAllProbabilities(UnknownDeck);
+        SortListByProbability(UnknownDeck);
+    }
+
+    /// <summary>
+    /// Will default back to the games initial
+    /// </summary>
+    public void ResetApplication(){
+        ResetAllCards();
+        for(int i = 0; i < UnknownDeck.Count; i++){
+            Destroy(UnknownDeck[i]);
+        }
+        SaveInitalCardData();
+        if (DebugMode){ Debug.Log($"{DebugID} Pressed Reset button; Reset the application to starting infection deck"); }
     }
 
 
@@ -243,27 +267,31 @@ public class GameManager : MonoBehaviour
             if (DebugMode){ Debug.Log($"{DebugID} Loaded cards from memory"); }
         }
         else{
-            CardData w = new() { CardName = "Washington", Colour = CardData.CardColour.Blue };
-            AddCardDataToUnknownDeck(w, 3);
-            w = new() { CardName = "New York",      Colour = CardData.CardColour.Blue };
-            AddCardDataToUnknownDeck(w, 3);
-            w = new() { CardName = "Jacksonville",  Colour = CardData.CardColour.Yellow };
-            AddCardDataToUnknownDeck(w, 3);
-            w = new() { CardName = "London",        Colour = CardData.CardColour.Blue };
-            AddCardDataToUnknownDeck(w, 3);
-            w = new() { CardName = "Lagos",         Colour = CardData.CardColour.Yellow };
-            AddCardDataToUnknownDeck(w, 3);
-            w = new() { CardName = "Sao Paolo",     Colour = CardData.CardColour.Yellow };
-            AddCardDataToUnknownDeck(w, 3);
-            w = new() { CardName = "Istanbul",      Colour = CardData.CardColour.Black };
-            AddCardDataToUnknownDeck(w, 3);
-            w = new() { CardName = "Tripoli",       Colour = CardData.CardColour.Black };
-            AddCardDataToUnknownDeck(w, 3);
-            w = new() { CardName = "Cairo",         Colour = CardData.CardColour.Black };
-            AddCardDataToUnknownDeck(w, 3);
-            if (DebugMode){ Debug.Log($"{DebugID} File not found on device, creating new file"); }
-            SaveToFile();
+            SaveInitalCardData();
+            if (DebugMode){ Debug.Log($"{DebugID} File not found on device, created new file"); }
         }
+    }
+    private void SaveInitalCardData(){
+        UnknownDeck = new();
+        CardData w = new() { CardName = "Washington", Colour = CardData.CardColour.Blue };
+        AddCardDataToUnknownDeck(w, 3);
+        w = new() { CardName = "New York",      Colour = CardData.CardColour.Blue };
+        AddCardDataToUnknownDeck(w, 3);
+        w = new() { CardName = "Jacksonville",  Colour = CardData.CardColour.Yellow };
+        AddCardDataToUnknownDeck(w, 3);
+        w = new() { CardName = "London",        Colour = CardData.CardColour.Blue };
+        AddCardDataToUnknownDeck(w, 3);
+        w = new() { CardName = "Lagos",         Colour = CardData.CardColour.Yellow };
+        AddCardDataToUnknownDeck(w, 3);
+        w = new() { CardName = "Sao Paolo",     Colour = CardData.CardColour.Yellow };
+        AddCardDataToUnknownDeck(w, 3);
+        w = new() { CardName = "Istanbul",      Colour = CardData.CardColour.Black };
+        AddCardDataToUnknownDeck(w, 3);
+        w = new() { CardName = "Tripoli",       Colour = CardData.CardColour.Black };
+        AddCardDataToUnknownDeck(w, 3);
+        w = new() { CardName = "Cairo",         Colour = CardData.CardColour.Black };
+        AddCardDataToUnknownDeck(w, 3);
+        SaveToFile();
     }
     public void QuitGame(){
         SaveToFile();

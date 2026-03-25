@@ -23,8 +23,9 @@ public class GameManager : MonoBehaviour
         }
     }
     [SerializeField] private GameObject CardPrefabObject;
+    [SerializeField] private GameObject FillerObject;
     [SerializeField] public List<GameObject> UnknownDeck; //The part of the drawpile we have not reached yet
-    [SerializeField] public List<GameObject> PreviousKnownDeck; // The part of the drawpile we know
+    [SerializeField] public List<List<GameObject>> PreviousKnownDeck; // The part of the drawpile we know
     [SerializeField] public List<GameObject> OpenDeck; // the cards that ar efaced up
     [Header("References")]
     [SerializeField] private GameObject UnknownDeckObject;
@@ -43,7 +44,6 @@ public class GameManager : MonoBehaviour
         PreviousKnownDeck = new();
         UnknownDeck = new();
         OpenDeck = new();
-
         LoadFromFile();
     }
 
@@ -136,6 +136,9 @@ public class GameManager : MonoBehaviour
         return card;
     }
 
+     /// <summary>
+     /// Used to remove a single card from the OpenDeck. Called from the CardDataPrefab button
+     /// </summary>
     public void RemoveCardFromOpenDeck(GameObject card){
         CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
         if (cardPrefab.GetAmount() == 1){ 
@@ -198,18 +201,33 @@ public class GameManager : MonoBehaviour
     /// Called by the Pandemic button. Puts all cards from the OpenDeck into the PreviousKnowndeck
     /// </summary>
     public void MoveAllCardsToPreviousknownDeck(){
+        List<GameObject> topList = new();
+        if(OpenDeck.Count == 0){ return; }
+
         for (int i = OpenDeck.Count - 1; i >= 0; i--){
             GameObject card = OpenDeck[i];
             CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
             int amount = cardPrefab.GetAmount();
             Debug.Log($"{DebugID} Moving {cardPrefab.Data.CardName} x{amount} to PreviousKnownDeck");
 
-            AddCardToDeck(card, amount, PreviousKnownDeckObject.transform, PreviousKnownDeck);
+            AddCardToDeck(card, amount, PreviousKnownDeckObject.transform, topList);
+
             RemoveCardFromDeck(card, amount, OpenDeck);
         }
 
-        SetAllProbabilities(PreviousKnownDeck);
-        SortListByProbability(PreviousKnownDeck);
+        // Move all new cards to the top (indices 0 onwards)
+        for (int i = 0; i < topList.Count; i++){
+            topList[i].transform.SetSiblingIndex(i);
+        }
+
+        // Create filler instance after the new cards
+        GameObject fillerInstance = Instantiate(FillerObject, PreviousKnownDeckObject.transform);
+        fillerInstance.transform.SetSiblingIndex(topList.Count);
+
+        SetAllProbabilities(topList);
+        SortListByProbability(topList);
+        PreviousKnownDeck.Add(topList);
+        Debug.Log($"{PreviousKnownDeck[0]}");
         if (DebugMode){ Debug.Log($"{DebugID} Pressed Pandemic button; Moved all cards in Open Deck to PreviousKnownDeck"); }
     }
 
@@ -219,7 +237,9 @@ public class GameManager : MonoBehaviour
     public void ResetAllCards(){
         // TODO move all cards to UnknownDeck
         MoveAllCardsToUnknownDeck(OpenDeck);
-        MoveAllCardsToUnknownDeck(PreviousKnownDeck);
+        for (int i = PreviousKnownDeck.Count; i >= 0; i--){
+            MoveAllCardsToUnknownDeck(PreviousKnownDeck[i]);
+        }
         if (DebugMode){ Debug.Log($"{DebugID} Pressed Reset month button; Moved all cards to the UnknownDeck"); }
         OpenCloseSettings();
     }

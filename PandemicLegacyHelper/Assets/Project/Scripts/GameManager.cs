@@ -263,7 +263,7 @@ public class GameManager : MonoBehaviour
         SetAllProbabilities(topList);
         SortListByProbability(topList);
         PreviousKnownDeck.Add(topList);
-        Debug.Log($"{PreviousKnownDeck[0]}");
+        
         if (DebugMode){ Debug.Log($"{DebugID} Pressed Pandemic button; Moved all cards in Open Deck to PreviousKnownDeck"); }
     }
 
@@ -275,6 +275,13 @@ public class GameManager : MonoBehaviour
         MoveAllCardsToUnknownDeck(OpenDeck);
         for (int i = PreviousKnownDeck.Count-1; i >= 0; i--){
             MoveAllCardsToUnknownDeck(PreviousKnownDeck[i]);
+        }
+        Transform[] allChildren = PreviousKnownDeckObject.GetComponentsInChildren<Transform>();
+        for(int i = allChildren.Length-1; i >= 0; i-- ){
+            GameObject filler = allChildren[i].gameObject;
+            if(filler.name == "filler(Clone)"){
+                Destroy(filler);
+            }
         }
         if (DebugMode){ Debug.Log($"{DebugID} Pressed Reset month button; Moved all cards to the UnknownDeck"); }
         OpenCloseSettings();

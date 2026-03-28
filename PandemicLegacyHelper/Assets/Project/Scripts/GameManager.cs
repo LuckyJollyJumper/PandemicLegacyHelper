@@ -22,15 +22,12 @@ public class GameManager : MonoBehaviour
             return instance;
         }
     }
-    [SerializeField] private GameObject CardPrefabObject;
-    [SerializeField] private GameObject FillerObject;
-    [SerializeField] public List<GameObject> UnknownDeck; //The part of the drawpile we have not reached yet
-    [SerializeField] public List<List<GameObject>> PreviousKnownDeck; // The part of the drawpile we know
-    [SerializeField] public List<GameObject> OpenDeck; // the cards that ar efaced up
+    [SerializeField] private GameObject KnownDeckObject; // Object that holds a part of the previousKnownDeck
+    
     [Header("References")]
-    [SerializeField] private GameObject UnknownDeckObject;
-    [SerializeField] private GameObject PreviousKnownDeckObject;
-    [SerializeField] private GameObject OpenDeckObject;
+    [SerializeField] private DeckObject UnknownDeckObject;
+    [SerializeField] private DeckObject PreviousKnownDeckObject;
+    [SerializeField] private DeckObject OpenDeckObject;
     [SerializeField] private GameObject PopUpObject;
     [SerializeField] private GameObject SettingsObject;
     [Header("Debug")]
@@ -40,9 +37,6 @@ public class GameManager : MonoBehaviour
     void Start(){
         PopUpObject.SetActive(false);
         SettingsObject.SetActive(false);
-        PreviousKnownDeck = new();
-        UnknownDeck = new();
-        OpenDeck = new();
 
         LoadFromFile();
     }
@@ -50,11 +44,31 @@ public class GameManager : MonoBehaviour
     //----------------------------------------------------------------------//
     //----------Functions for adding and removing cards from decks----------//
     //----------------------------------------------------------------------//
+
+    /// <summary>
+    /// Used to add a new card to the UnknownDeck. Called from the PopUp
+    /// </summary>
+    public void AddCardDataToUnknownDeck(CardData newCard){
+        UnknownDeckObject.AddCardData(newCard);
+    }
+
+    /// <summary>
+     /// Used to remove a single card from the OpenDeck. Called from the CardDataPrefab button
+     /// </summary>
+    public void RemoveCardFromOpenDeck(GameObject card){
+        CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
+        if (cardPrefab.GetAmount() == 1){ 
+            OpenDeck.Remove(card);
+            Destroy(card);
+        }
+        else{ cardPrefab.SubtractAmount(1); }
+    }
+
     public void AddCardToOpenDeck(GameObject card){
         CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
 
         // Add card to OpenDeck
-        (bool exists, GameObject foundCard) = CardExistsInList(OpenDeck, cardPrefab.Data);
+        (bool exists, GameObject foundCard) = CardExistsInList(cardPrefab.Data);
         if (exists){
             foundCard.GetComponent<CardPrefab>().AddAmount(1);
             if(DebugMode){Debug.Log($"{DebugID} Added 1 to {foundCard.GetComponent<CardPrefab>().Data.CardName}, new: {foundCard.GetComponent<CardPrefab>().Data.Amount}");}
@@ -101,120 +115,6 @@ public class GameManager : MonoBehaviour
         SetAllProbabilities(OpenDeck);
         SortListByProbability(OpenDeck);
     }
-    public void AddCardToDeck(GameObject card, int amount, Transform newParent, List<GameObject> newDeck){
-        var cardData = card.GetComponent<CardPrefab>().Data;
-        AddCardDataToDeck(cardData, amount, newParent, newDeck);
-    }
-    /// <summary>
-    /// Used to load in new cards using only CardData. Used to load in new cards that have not been instantiated yet.
-    /// </summary>
-    public void AddCardDataToDeck(CardData cardData, int amount, Transform newParent, List<GameObject> newDeck){
-        (bool exists, GameObject foundCard) = CardExistsInList(newDeck, cardData);
-        if (exists){
-            foundCard.GetComponent<CardPrefab>().AddAmount(amount);
-        }else{
-            GameObject newCard = AddCardDataToUI(cardData, amount, newParent);
-            newDeck.Add(newCard);
-        }
-        SetAllProbabilities(newDeck);
-        SortListByProbability(newDeck);
-    }
-    public void RemoveCardFromDeck(GameObject card, int amount, List<GameObject> oldList){
-        CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
-        (bool exists, _) = CardExistsInList(oldList, cardPrefab.Data);
-        if (exists){
-            if(cardPrefab.GetAmount() <= amount){ 
-                oldList.Remove(card);
-                Destroy(card);
-            }
-            else{ cardPrefab.SubtractAmount(amount); }
-        }
-        else{ if (DebugMode){ Debug.Log($"{DebugID} Could not remove card from list, does not exist"); } }
-    }
-    /// <summary>
-    /// Used by the PopUp or other methods that want to add a card without knowing of the Lists data
-    /// </summary>
-    public void AddCardDataToUnknownDeck(CardData data, int amount){
-        AddCardDataToDeck(data, amount, UnknownDeckObject.transform, UnknownDeck);
-    }
-
-    public (bool, GameObject) CardExistsInList(List<GameObject> list, CardData cardData){
-        foreach (GameObject card in list){
-            if (card.GetComponent<CardPrefab>().Data.CardName == cardData.CardName){ return (true, card); }
-        }
-        return (false, null);
-    }
-    private List<GameObject> FindCardInPreviousKnownDeck(CardData cardData){
-        for(int i = 0; i < PreviousKnownDeck.Count; i++){
-            (bool exists, _) = CardExistsInList(PreviousKnownDeck[i], cardData);
-            if (exists){
-                return PreviousKnownDeck[i];
-            }
-        }
-        return null;
-    }
-    private void RemoveCardFromPreviousKnownDeckAndReorder(GameObject card, int amount){
-        List<GameObject> sublist = FindCardInPreviousKnownDeck(card.GetComponent<CardPrefab>().Data);
-        if (sublist != null){
-            RemoveCardFromDeck(card, amount, sublist);
-            SetAllProbabilities(sublist);
-            SortListByProbability(sublist);
-            if(DebugMode){ Debug.Log($"{DebugID} Re-sorted PreviousKnownDeck sublist after card removal"); }
-        }
-    }
-    public GameObject AddCardDataToUI(CardData cardData, int amount, Transform newParent){
-        GameObject card = Instantiate(CardPrefabObject, newParent);
-        card.GetComponent<CardPrefab>().SetCardPrefab(cardData.Clone(), amount);
-        return card;
-    }
-
-     /// <summary>
-     /// Used to remove a single card from the OpenDeck. Called from the CardDataPrefab button
-     /// </summary>
-    public void RemoveCardFromOpenDeck(GameObject card){
-        CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
-        if (cardPrefab.GetAmount() == 1){ 
-            OpenDeck.Remove(card);
-            Destroy(card);
-        }
-        else{ cardPrefab.SubtractAmount(1); }
-    }
-
-
-
-    //----------------------------------------------------------------------//
-    //-------Functions related to calculating probabilities of cards--------//
-    //----------------------------------------------------------------------//
-
-    public void SetAllProbabilities(List<GameObject> list){
-        int size = GetActualListSize(list);
-        for (int i = 0; i < list.Count; i++){
-            CardPrefab cPrefab = list[i].GetComponent<CardPrefab>();
-            cPrefab.SetProbability(GetProbability(size, cPrefab.Data.Amount));
-        }
-    }
-    private void SetAllProbabilities(List<List<GameObject>> list){
-        for(int i = 0; i < list.Count; i++){
-            SetAllProbabilities(list[i]);
-        }
-    }
-    public float GetProbability(int listSize, int cardAmounts){
-        return MathF.Round((float)cardAmounts / (float)listSize * 100f,   1);
-    }
-    public int GetActualListSize(List<GameObject> list){
-        int size = 0;
-        foreach (GameObject card in list){
-            size += card.GetComponent<CardPrefab>().Data.Amount;
-        }
-        return size;
-    }
-    public void SortListByProbability(List<GameObject> list){
-        list.Sort((a, b) => b.GetComponent<CardPrefab>().Data.Probability.CompareTo(a.GetComponent<CardPrefab>().Data.Probability));
-        for (int i = 0; i < list.Count; i++){
-            list[i].transform.SetSiblingIndex(i);
-        }
-    }
-
 
     //----------------------------------------------------------------------//
     //-----------------------Functions used by buttons----------------------//
@@ -240,6 +140,10 @@ public class GameManager : MonoBehaviour
         List<GameObject> topList = new();
         if(OpenDeck.Count == 0){ return; }
 
+        // Create filler instance after the new cards
+        GameObject knownDeckInstance = Instantiate(KnownDeckObject, PreviousKnownDeckObject.transform);
+        knownDeckInstance.transform.SetSiblingIndex(topList.Count);
+
         for (int i = OpenDeck.Count - 1; i >= 0; i--){
             GameObject card = OpenDeck[i];
             CardPrefab cardPrefab = card.GetComponent<CardPrefab>();
@@ -256,14 +160,10 @@ public class GameManager : MonoBehaviour
             topList[i].transform.SetSiblingIndex(i);
         }
 
-        // Create filler instance after the new cards
-        GameObject fillerInstance = Instantiate(FillerObject, PreviousKnownDeckObject.transform);
-        fillerInstance.transform.SetSiblingIndex(topList.Count);
-
         SetAllProbabilities(topList);
         SortListByProbability(topList);
         PreviousKnownDeck.Add(topList);
-        
+
         if (DebugMode){ Debug.Log($"{DebugID} Pressed Pandemic button; Moved all cards in Open Deck to PreviousKnownDeck"); }
     }
 
@@ -329,7 +229,7 @@ public class GameManager : MonoBehaviour
         (bool exists, List<CardData> loadedCards) = CardDataSaver.LoadFromFile();
         if (exists){
             foreach (CardData card in loadedCards){
-                AddCardDataToDeck(card, card.Amount, UnknownDeckObject.transform, UnknownDeck);
+                UnknownDeckObject.GetComponent<DeckObject>().AddCardData(card, card.Amount);
             }
             if (DebugMode){ Debug.Log($"{DebugID} Loaded cards from memory"); }
         }

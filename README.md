@@ -21,20 +21,20 @@ Holds all cards that have been drawn already.
 
 ### Cards
 Cards are presented as a grouping of the same name making it easier to see whether cards have a higher change to appear. However cards will still be moved individually.
-![Image](https://github.com/LuckyJollyJumper/PandemicLegacyHelper/blob/main/ScreenShots/CardExample.png?raw=true)
+![Card Example](https://github.com/LuckyJollyJumper/PandemicLegacyHelper/blob/main/ScreenShots/CardExample.png?raw=true)
 
 ### Drawing cards
 Cards can be drawn from the `Draw Pile` and the `Known Draw Pile` by clicking on the button with ">". Which moves a single card from that group to the `Open Pile`.
 
 Cards in the `Open Pile` can be removed by using the "X" button and will remove a single card from the grouping.
-![Image](https://github.com/LuckyJollyJumper/PandemicLegacyHelper/blob/main/ScreenShots/CardExample2.png?raw=true)
+![Card Example](https://github.com/LuckyJollyJumper/PandemicLegacyHelper/blob/main/ScreenShots/CardExample2.png?raw=true)
 
 ### Adding cards
-To add cards to the tool the button Add Infection Card can be used to add a single grouping of a card. DUPLICATE NAMES WILL BE GROUPED TOGETHER!
-![Image](https://github.com/LuckyJollyJumper/PandemicLegacyHelper/blob/main/ScreenShots/AddCard.png?raw=true)
+To add cards to the tool the button Add Infection Card can be used to add a single grouping of a card to the `Draw Pile`. DUPLICATE NAMES WILL BE GROUPED TOGETHER!
+![Add Card Button](https://github.com/LuckyJollyJumper/PandemicLegacyHelper/blob/main/ScreenShots/AddCard.png?raw=true)
 
-
-![Image](https://github.com/LuckyJollyJumper/PandemicLegacyHelper/blob/main/ScreenShots/PandemicButton.png?raw=true)
+The Pandemic button will move all the cards in the `Open Pile` to a new subset in the `Known Draw Pile`.
+![Pandemic Button](https://github.com/LuckyJollyJumper/PandemicLegacyHelper/blob/main/ScreenShots/PandemicButton.png?raw=true)
 
 ### Resetting the game
 The game saves all your cards when ...

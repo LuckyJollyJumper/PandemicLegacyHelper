@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6620415910593245064}
   - component: {fileID: 5052416584888451129}
   - component: {fileID: 3241511428600807598}
+  - component: {fileID: 7642212994092776503}
   m_Layer: 5
   m_Name: DividerDeckObject
   m_TagString: Untagged
@@ -72,6 +73,23 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &7642212994092776503
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1206726017233729135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5982a1e66a6d92b40af87f4cf82e7953, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KnownDeckObject
+  DType: 0
+  CardPrefabObject: {fileID: 1206726017233729135, guid: c2380fac079b16d458a8a2ddeb6a4dd6, type: 3}
+  Deck: []
+  DebugMode: 0
+  dividerObject: {fileID: 1256452351559697572}
 --- !u!1 &1256452351559697572
 GameObject:
   m_ObjectHideFlags: 0

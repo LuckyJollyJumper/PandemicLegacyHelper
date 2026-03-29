@@ -13,8 +13,8 @@ public class DeckObject : MonoBehaviour
     [SerializeField] private GameObject CardPrefabObject;
     [SerializeField] public List<GameObject> Deck; // Holds all the children Cards of this deck
      [Header("Debug")]
-    [SerializeField] private bool DebugMode;
-    private string DebugID;
+    [SerializeField] protected bool DebugMode;
+    protected string DebugID;
 
     void Start(){
         this.DebugID = $"[DeckObject/{DType}]";
@@ -28,7 +28,7 @@ public class DeckObject : MonoBehaviour
     /// <summary>
     /// Used to load in new cards using only CardData by instantiating a new card if not already in the deck.
     /// </summary>
-    public void AddCardData(CardData cardData, int amount){
+    public virtual void AddCardData(CardData cardData, int amount){
         // TODO: Update button
         (bool exists, GameObject foundCard) = CardExistsInList(cardData);
         if (exists){
@@ -39,18 +39,18 @@ public class DeckObject : MonoBehaviour
         }
         UpdateDeck();
     }
-    public void AddCardDataList(List<CardData> cards){
+    public virtual void AddCardDataList(List<CardData> cards){
         for (int i = 0; i < cards.Count; i++){
             AddCardData(cards[i], cards[i].Amount);
         }
     }
-    public GameObject AddCardDataToUI(CardData cardData, int amount){
+    public virtual GameObject AddCardDataToUI(CardData cardData, int amount){
         GameObject card = Instantiate(CardPrefabObject, this.transform);
         card.GetComponent<CardPrefab>().SetCardPrefab(cardData.Clone(), amount, DType, this);
         return card;
     }
 
-    public void RemoveCardData(CardData card, int amount){
+    public virtual void RemoveCardData(CardData card, int amount){
         (bool exists, GameObject foundCard) = CardExistsInList(card);
         if (exists){
             if(foundCard.GetComponent<CardPrefab>().GetAmount() <= amount){ 
@@ -63,7 +63,7 @@ public class DeckObject : MonoBehaviour
         else{ if (DebugMode){ Debug.Log($"{DebugID} Could not remove card from list, does not exist"); } }
     }
 
-    public List<CardData> EmptyDeck(){
+    public virtual List<CardData> EmptyDeck(){
         List<CardData> returnList = new();
         for (int i = Deck.Count-1; i >= 0; i--){
             returnList.Add(Deck[i].GetComponent<CardPrefab>().Data);
@@ -73,7 +73,7 @@ public class DeckObject : MonoBehaviour
         return returnList;
     }
 
-    public (bool, GameObject) CardExistsInList(CardData cardData){
+    public virtual (bool, GameObject) CardExistsInList(CardData cardData){
         foreach (GameObject card in Deck){
             if (card.GetComponent<CardPrefab>().Data.CardName == cardData.CardName){ return (true, card); }
         }

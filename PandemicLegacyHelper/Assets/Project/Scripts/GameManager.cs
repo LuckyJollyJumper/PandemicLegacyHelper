@@ -81,7 +81,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void MoveAllCardsToPreviousknownDeck(){
         List<CardData> l = OpenDeckObject.EmptyDeck();
-        GameObject newDeckObject = Instantiate(DeckObject, PreviousKnownDeckObject.gameObject.transform);
+        if (l.Count == 0){ return; }
+        GameObject newDeckObject = Instantiate(DividerDeckObject, PreviousKnownDeckObject.gameObject.transform);
+        newDeckObject.transform.SetSiblingIndex(0); // Make sure the new deck is always at the start of the list to keep the order of the decks correct
         PreviousKnownDeckObjects.Add(newDeckObject.GetComponent<DeckObject>());
         newDeckObject.GetComponent<DeckObject>().AddCardDataList(l);
         if (DebugMode){ Debug.Log($"{DebugID} Pressed Pandemic button; Moved all cards in Open Deck to PreviousKnownDeck"); }

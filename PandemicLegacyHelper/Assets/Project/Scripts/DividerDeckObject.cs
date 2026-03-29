@@ -5,14 +5,10 @@ using UnityEngine;
 /// </summary>
 public class KnownDeckObject : DeckObject
 {
-    [SerializeField] GameObject dividerObject;
-
-    /// <summary>
-    /// Used for hiding the divider if the gameObject is empty
-    /// </summary>
-    private void OnTransformParentChanged(){
-        if(dividerObject.transform.GetSiblingIndex() == 0){
-            Destroy(this);
+    public override void RemoveCardData(CardData card, int amount){
+        base.RemoveCardData(card, amount);
+        if(Deck.Count == 0){
+            Destroy(this.gameObject);
         }
     }
 }

@@ -7,11 +7,18 @@ using System;
 /// </summary>
 public class DeckObject : MonoBehaviour
 {
+    public enum DeckType{UnknownDeck, PreviousKnownDeck, OpenDeck } // Used to change the button on the cards
+
+    [SerializeField] public DeckType DType;
     [SerializeField] private GameObject CardPrefabObject;
     [SerializeField] public List<GameObject> Deck; // Holds all the children Cards of this deck
      [Header("Debug")]
     [SerializeField] private bool DebugMode;
-    private string DebugID = "[DeckObject]";
+    private string DebugID;
+
+    void Start(){
+        this.DebugID = $"[DeckObject/{DType}]";
+    }
 
 
     //----------------------------------------------------------------------//
@@ -22,6 +29,7 @@ public class DeckObject : MonoBehaviour
     /// Used to load in new cards using only CardData by instantiating a new card if not already in the deck.
     /// </summary>
     public void AddCardData(CardData cardData, int amount){
+        // TODO: Update button
         (bool exists, GameObject foundCard) = CardExistsInList(cardData);
         if (exists){
             foundCard.GetComponent<CardPrefab>().AddAmount(amount);
@@ -31,9 +39,14 @@ public class DeckObject : MonoBehaviour
         }
         UpdateDeck();
     }
+    public void AddCardDataList(List<CardData> cards){
+        for (int i = 0; i < cards.Count; i++){
+            AddCardData(cards[i], cards[i].Amount);
+        }
+    }
     public GameObject AddCardDataToUI(CardData cardData, int amount){
         GameObject card = Instantiate(CardPrefabObject, this.transform);
-        card.GetComponent<CardPrefab>().SetCardPrefab(cardData.Clone(), amount);
+        card.GetComponent<CardPrefab>().SetCardPrefab(cardData.Clone(), amount, DType, this);
         return card;
     }
 
@@ -50,6 +63,16 @@ public class DeckObject : MonoBehaviour
         else{ if (DebugMode){ Debug.Log($"{DebugID} Could not remove card from list, does not exist"); } }
     }
 
+    public List<CardData> EmptyDeck(){
+        List<CardData> returnList = new();
+        for (int i = Deck.Count-1; i >= 0; i--){
+            returnList.Add(Deck[i].GetComponent<CardPrefab>().Data);
+            Destroy(Deck[i]);
+            Deck.Remove(Deck[i]);
+        }
+        return returnList;
+    }
+
     public (bool, GameObject) CardExistsInList(CardData cardData){
         foreach (GameObject card in Deck){
             if (card.GetComponent<CardPrefab>().Data.CardName == cardData.CardName){ return (true, card); }
@@ -62,6 +85,7 @@ public class DeckObject : MonoBehaviour
     //----------------------------------------------------------------------//
     //-------Functions related to calculating probabilities of cards--------//
     //----------------------------------------------------------------------//
+
     /// <summary>
     /// Used to update all probabilities and order of the Deck
     /// </summary>
@@ -70,14 +94,14 @@ public class DeckObject : MonoBehaviour
         SortListByProbability();
     }
 
-    public void SetAllProbabilities(){
+    private void SetAllProbabilities(){
         int size = GetActualListSize();
-        for (int i = 0; i < size; i++){
+        for (int i = 0; i < Deck.Count; i++){
             CardPrefab cPrefab = Deck[i].GetComponent<CardPrefab>();
             cPrefab.SetProbability(GetProbability(size, cPrefab.Data.Amount));
         }
     }
-    public float GetProbability(int listSize, int cardAmounts){
+    private float GetProbability(int listSize, int cardAmounts){
         return MathF.Round((float)cardAmounts / (float)listSize * 100f,   1);
     }
     public int GetActualListSize(){
@@ -87,7 +111,7 @@ public class DeckObject : MonoBehaviour
         }
         return size;
     }
-    public void SortListByProbability(){
+    private void SortListByProbability(){
         Deck.Sort((a, b) => b.GetComponent<CardPrefab>().Data.Probability.CompareTo(a.GetComponent<CardPrefab>().Data.Probability));
         for (int i = 0; i < Deck.Count; i++){
             Deck[i].transform.SetSiblingIndex(i);

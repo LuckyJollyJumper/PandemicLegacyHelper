@@ -1066,6 +1066,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6286728280124174258, guid: f85e851f658ecd2488f8a85598325333, type: 3}
+      propertyPath: DType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6620415910593245064, guid: f85e851f658ecd2488f8a85598325333, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1151,11 +1155,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f85e851f658ecd2488f8a85598325333, type: 3}
---- !u!1 &126950845 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1206726017233729135, guid: f85e851f658ecd2488f8a85598325333, type: 3}
+--- !u!114 &126950845 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6286728280124174258, guid: f85e851f658ecd2488f8a85598325333, type: 3}
   m_PrefabInstance: {fileID: 126950844}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 161fba1d5eb18de4e94a58e31765ea69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeckObject
 --- !u!224 &126950846 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 6620415910593245064, guid: f85e851f658ecd2488f8a85598325333, type: 3}
@@ -2898,11 +2908,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6620415910593245064, guid: f85e851f658ecd2488f8a85598325333, type: 3}
   m_PrefabInstance: {fileID: 669597616}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &669597618 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1206726017233729135, guid: f85e851f658ecd2488f8a85598325333, type: 3}
+--- !u!114 &669597621 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6286728280124174258, guid: f85e851f658ecd2488f8a85598325333, type: 3}
   m_PrefabInstance: {fileID: 669597616}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 161fba1d5eb18de4e94a58e31765ea69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeckObject
 --- !u!1 &729029131
 GameObject:
   m_ObjectHideFlags: 0
@@ -4639,13 +4655,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a623abc995e7241438d8738b3803dd79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  CardPrefabObject: {fileID: 1206726017233729135, guid: c2380fac079b16d458a8a2ddeb6a4dd6, type: 3}
-  KnownDeckObject: {fileID: 1206726017233729135, guid: f85e851f658ecd2488f8a85598325333, type: 3}
-  KnownDeckObjects: []
-  UnknownDeck: []
-  OpenDeck: []
-  UnknownDeckObject: {fileID: 669597618}
-  PreviousKnownDeckObject: {fileID: 1418442104}
+  DeckObject: {fileID: 1206726017233729135, guid: f85e851f658ecd2488f8a85598325333, type: 3}
+  UnknownDeckObject: {fileID: 669597621}
+  PreviousKnownDeckObject: {fileID: 1418442107}
+  PreviousKnownDeckObjects: []
   OpenDeckObject: {fileID: 126950845}
   PopUpObject: {fileID: 236354059}
   SettingsObject: {fileID: 485454789}
@@ -6713,6 +6726,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6286728280124174258, guid: f85e851f658ecd2488f8a85598325333, type: 3}
+      propertyPath: DType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6620415910593245064, guid: f85e851f658ecd2488f8a85598325333, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -6803,11 +6820,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 6620415910593245064, guid: f85e851f658ecd2488f8a85598325333, type: 3}
   m_PrefabInstance: {fileID: 1418442102}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1418442104 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 1206726017233729135, guid: f85e851f658ecd2488f8a85598325333, type: 3}
+--- !u!114 &1418442107 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6286728280124174258, guid: f85e851f658ecd2488f8a85598325333, type: 3}
   m_PrefabInstance: {fileID: 1418442102}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 161fba1d5eb18de4e94a58e31765ea69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DeckObject
 --- !u!1 &1454741351
 GameObject:
   m_ObjectHideFlags: 0

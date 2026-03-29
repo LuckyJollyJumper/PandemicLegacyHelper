@@ -41,8 +41,8 @@ public static class CardDataSaver{
         List<CardData> cardDataList = new List<CardData>();
         foreach (GameObject obj in gameObjects){
             CardPrefab cardPrefab = obj.GetComponent<CardPrefab>();
-            if (cardPrefab != null && cardPrefab.Data != null){
-                cardDataList.Add(cardPrefab.Data);
+            if (cardPrefab != null && cardPrefab.GetData() != null){
+                cardDataList.Add(cardPrefab.GetData());
             }
         }
         return cardDataList;

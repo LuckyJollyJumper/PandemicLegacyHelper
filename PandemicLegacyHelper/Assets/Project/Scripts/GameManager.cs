@@ -31,6 +31,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private DeckObject OpenDeckObject;
     [SerializeField] private GameObject PopUpObject;
     [SerializeField] private GameObject SettingsObject;
+    [SerializeField] private GameObject WarningObject;
     [Header("Debug")]
     [SerializeField] private bool DebugMode;
     private string DebugID = "[GameManager]";
@@ -38,36 +39,39 @@ public class GameManager : MonoBehaviour
     void Start(){
         PopUpObject.SetActive(false);
         SettingsObject.SetActive(false);
+        WarningObject.SetActive(false);
 
         LoadFromFile();
     }
+
+
 
     //----------------------------------------------------------------------//
     //----------Functions for adding and removing cards from decks----------//
     //----------------------------------------------------------------------//
 
     /// <summary>
-    /// Used to add a new card to the UnknownDeck. Called from the PopUp and when loading in from file
+    /// Called from the PopUp and when loading in from file
     /// </summary>
     public void AddCardDataToUnknownDeck(CardData newCard, int amount){
         UnknownDeckObject.AddCardData(newCard, amount);
     }
-
-    public void AddCardDataListToPreviousKnownDeck(List<CardData> cards){
-        
-    }
-
+    /// <summary>
+    /// Called from the CardDataPrefab button
+    /// </summary>
     public void AddCardDataToOpenDeck(CardData card, DeckObject deck){
         deck.RemoveCardData(card, 1);
         OpenDeckObject.AddCardData(card, 1);
     }
 
     /// <summary>
-     /// Used to remove a single card from the OpenDeck. Called from the CardDataPrefab button
+     /// Called from the CardDataPrefab button
      /// </summary>
     public void RemoveCardFromOpenDeck(CardData card){
         OpenDeckObject.RemoveCardData(card, 1);
     }
+
+
 
     //----------------------------------------------------------------------//
     //-----------------------Functions used by buttons----------------------//
@@ -75,6 +79,7 @@ public class GameManager : MonoBehaviour
 
     public void OpenClosePopUp(){ PopUpObject.SetActive(!SettingsObject.activeSelf); }
     public void OpenCloseSettings(){ SettingsObject.SetActive(!SettingsObject.activeSelf); }
+    public void OpenCloseWarning(){ WarningObject.SetActive(!WarningObject.activeSelf); }
 
     /// <summary>
     /// Called by the Pandemic button. Puts all cards from the OpenDeck into the PreviousKnowndeck
@@ -99,11 +104,9 @@ public class GameManager : MonoBehaviour
         }
         UnknownDeckObject.AddCardDataList(newList);
         
+        OpenCloseWarning();
         OpenCloseSettings();
         if (DebugMode){ Debug.Log($"{DebugID} Pressed Reset month button; Moved all cards to the UnknownDeck"); }
-    }
-    private void MoveAllCardsToUnknownDeck(List<GameObject> list){
-        
     }
 
     /// <summary>

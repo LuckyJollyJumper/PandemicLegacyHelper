@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Class used to store the data of a single card
+/// Class used to store the data of a single card grouping, including its colour, name, amount and probability.
 /// </summary>
 [System.Serializable]
 public class CardData
@@ -28,8 +28,6 @@ public class CardData
     /// <summary>
     /// Used to get a unity Color matched with CardColour for UI elements.
     /// </summary>
-    /// <param name="colour"></param>
-    /// <returns></returns>
     public Color GetCardColour(){
         return this.Colour switch{
             CardData.CardColour.Blue => new Color(0.284f, 0.742f, 0.893f), //#48BDE4

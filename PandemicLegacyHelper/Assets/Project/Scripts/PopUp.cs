@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Class used to control the inputfields and dropdowns of the PopUp GameObject and send filled in values as new card
-/// to the GameManager
+/// to the GameManager.
 /// </summary>
 public class PopUp : MonoBehaviour
 {
@@ -26,6 +26,9 @@ public class PopUp : MonoBehaviour
 
         ClosePopUp();
     }
+    /// <summary>
+    /// Seperate function because of the cancel button
+    /// </summary>
     public void ClosePopUp(){
         this.gameObject.SetActive(false);
     }

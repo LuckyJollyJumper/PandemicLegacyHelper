@@ -4,12 +4,15 @@ using UnityEngine.EventSystems;
 using System;
 
 /// <summary>
-/// Class used by the Card Prefab. Represents the data and amount of a card and holds the CardData
+/// Class used by the Card Prefab. Represents the data and amount of a card grouping and holds the CardData. Handles all
+/// visual changes in CardData and its button.
 /// </summary>
 public class CardPrefab : MonoBehaviour
 {
-    private DeckObject ParentDeck; // The deck that the CardData is in 
-    public CardData Data;
+    private DeckObject ParentDeck; // The deck that the CardData is in, used for removing after added to different Deck
+    private CardData Data;
+
+    [Header("References")]
     [SerializeField] private TMPro.TextMeshProUGUI CardNameText;
     [SerializeField] private TMPro.TextMeshProUGUI CardPercentageText;
     [SerializeField] private TMPro.TextMeshProUGUI CardAmountText;
@@ -51,14 +54,14 @@ public class CardPrefab : MonoBehaviour
         this.CardAmountText.text = $"{Data.Amount}";
     }
     public int GetAmount(){ return Data.Amount; }
+    public CardData GetData(){ return Data; }
+    public string GetCardName(){ return Data.CardName; }
+    public float GetProbability(){ return Data.Probability; }
 
-    public void SetButton(DeckObject.DeckType cardType){
+    private void SetButton(DeckObject.DeckType cardType){
         OnButtonClicked = null; // Reset the list
         switch (cardType){
             case DeckObject.DeckType.UnknownDeck:
-                this.OnButtonClicked += () => { GameManager.Instance.AddCardDataToOpenDeck(this.Data, ParentDeck);};
-                this.ButtonText.text = ">";
-                break;
             case DeckObject.DeckType.PreviousKnownDeck:
                 this.OnButtonClicked += () => { GameManager.Instance.AddCardDataToOpenDeck(this.Data, ParentDeck);};
                 this.ButtonText.text = ">";

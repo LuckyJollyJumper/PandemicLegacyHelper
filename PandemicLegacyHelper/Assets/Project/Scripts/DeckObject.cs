@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System;
 
 /// <summary>
-/// Ugly fix to remove the fillers when they are not needed anymore
+/// Represents a single deck of CardDataPrefabs. It handles all adding, removing and sorting.
 /// </summary>
 public class DeckObject : MonoBehaviour
 {
@@ -29,7 +29,6 @@ public class DeckObject : MonoBehaviour
     /// Used to load in new cards using only CardData by instantiating a new card if not already in the deck.
     /// </summary>
     public virtual void AddCardData(CardData cardData, int amount){
-        // TODO: Update button
         (bool exists, GameObject foundCard) = CardExistsInList(cardData);
         if (exists){
             foundCard.GetComponent<CardPrefab>().AddAmount(amount);
@@ -66,7 +65,7 @@ public class DeckObject : MonoBehaviour
     public virtual List<CardData> EmptyDeck(){
         List<CardData> returnList = new();
         for (int i = Deck.Count-1; i >= 0; i--){
-            returnList.Add(Deck[i].GetComponent<CardPrefab>().Data);
+            returnList.Add(Deck[i].GetComponent<CardPrefab>().GetData());
             Destroy(Deck[i]);
             Deck.Remove(Deck[i]);
         }
@@ -75,7 +74,7 @@ public class DeckObject : MonoBehaviour
 
     public virtual (bool, GameObject) CardExistsInList(CardData cardData){
         foreach (GameObject card in Deck){
-            if (card.GetComponent<CardPrefab>().Data.CardName == cardData.CardName){ return (true, card); }
+            if (card.GetComponent<CardPrefab>().GetCardName() == cardData.CardName){ return (true, card); }
         }
         return (false, null);
     }
@@ -86,9 +85,6 @@ public class DeckObject : MonoBehaviour
     //-------Functions related to calculating probabilities of cards--------//
     //----------------------------------------------------------------------//
 
-    /// <summary>
-    /// Used to update all probabilities and order of the Deck
-    /// </summary>
     private void UpdateDeck(){
         SetAllProbabilities();
         SortListByProbability();
@@ -98,7 +94,7 @@ public class DeckObject : MonoBehaviour
         int size = GetActualListSize();
         for (int i = 0; i < Deck.Count; i++){
             CardPrefab cPrefab = Deck[i].GetComponent<CardPrefab>();
-            cPrefab.SetProbability(GetProbability(size, cPrefab.Data.Amount));
+            cPrefab.SetProbability(GetProbability(size, cPrefab.GetAmount()));
         }
     }
     private float GetProbability(int listSize, int cardAmounts){
@@ -107,12 +103,12 @@ public class DeckObject : MonoBehaviour
     public int GetActualListSize(){
         int size = 0;
         foreach (GameObject card in Deck){
-            size += card.GetComponent<CardPrefab>().Data.Amount;
+            size += card.GetComponent<CardPrefab>().GetAmount();
         }
         return size;
     }
     private void SortListByProbability(){
-        Deck.Sort((a, b) => b.GetComponent<CardPrefab>().Data.Probability.CompareTo(a.GetComponent<CardPrefab>().Data.Probability));
+        Deck.Sort((a, b) => b.GetComponent<CardPrefab>().GetProbability().CompareTo(a.GetComponent<CardPrefab>().GetProbability()));
         for (int i = 0; i < Deck.Count; i++){
             Deck[i].transform.SetSiblingIndex(i);
         }

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 7ff2f1b092abe294d8a71f0cead80cb1
+guid: 4450d3b61ed722c46aecdd0eb2958a6f
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -836934134443494272
-    second: InfectionLogo_0
+      213: 7079393014045952428
+    second: InfectionLogoBackground_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: InfectionLogo_0
+      name: InfectionLogoBackground_0
       rect:
         serializedVersion: 2
-        x: 4
+        x: 0
         y: 0
-        width: 566
-        height: 568
+        width: 580
+        height: 580
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 084b818c6dc9264f0800000000000000
-      internalID: -836934134443494272
+      spriteID: ca94793207e0f3260800000000000000
+      internalID: 7079393014045952428
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      InfectionLogo_0: -836934134443494272
+      InfectionLogoBackground_0: 7079393014045952428
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

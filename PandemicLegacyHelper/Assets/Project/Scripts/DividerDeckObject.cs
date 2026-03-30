@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Respresent a subDeck used in KnownDeckObject and is a child of DeckObject. Needed to be able to delete the SubDeck when the 
@@ -11,5 +12,11 @@ public class DividerDeckObject : DeckObject
         if(Deck.Count == 0){
             Destroy(this.gameObject);
         }
+    }
+
+    public override List<CardData> EmptyDeck(){
+        List<CardData> deck = base.EmptyDeck();
+        Destroy(this.gameObject);
+        return deck;
     }
 }

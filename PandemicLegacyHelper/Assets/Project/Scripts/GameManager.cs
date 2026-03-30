@@ -87,11 +87,14 @@ public class GameManager : MonoBehaviour
     public void MoveAllCardsToPreviousknownDeck(){
         List<CardData> l = OpenDeckObject.EmptyDeck();
         if (l.Count == 0){ return; }
+        CreateDividerDeckObject(l);
+        if (DebugMode){ Debug.Log($"{DebugID} Pressed Pandemic button; Moved all cards in Open Deck to PreviousKnownDeck"); }
+    }
+    private void CreateDividerDeckObject(List<CardData> cardList){
         GameObject newDeckObject = Instantiate(DividerDeckObject, PreviousKnownDeckObject.gameObject.transform);
         newDeckObject.transform.SetSiblingIndex(0); // Make sure the new deck is always at the start of the list to keep the order of the decks correct
         PreviousKnownDeckObjects.Add(newDeckObject.GetComponent<DeckObject>());
-        newDeckObject.GetComponent<DeckObject>().AddCardDataList(l);
-        if (DebugMode){ Debug.Log($"{DebugID} Pressed Pandemic button; Moved all cards in Open Deck to PreviousKnownDeck"); }
+        newDeckObject.GetComponent<DeckObject>().AddCardDataList(cardList);
     }
 
     /// <summary>
@@ -103,6 +106,8 @@ public class GameManager : MonoBehaviour
             newList.AddRange(PreviousKnownDeckObjects[i].EmptyDeck());
         }
         UnknownDeckObject.AddCardDataList(newList);
+
+        SaveToFile(); 
         
         OpenCloseWarning();
         OpenCloseSettings();
@@ -125,14 +130,15 @@ public class GameManager : MonoBehaviour
     //-----------Functions for starting and stopping application------------//
     //----------------------------------------------------------------------//
     public void SaveToFile(){
-        // TODO: save all lists
-        CardDataSaver.SaveToFile(UnknownDeckObject.Deck);
+        CardDataSaver.SaveToFile(UnknownDeckObject, PreviousKnownDeckObjects, OpenDeckObject);
     }
     public void LoadFromFile(){
-        (bool exists, List<CardData> loadedCards) = CardDataSaver.LoadFromFile();
+        (bool exists, List<CardData> unknownDeck, List<List<CardData>> knownDeck, List<CardData> openDeck) = CardDataSaver.LoadFromFile();
         if (exists){
-            foreach (CardData card in loadedCards){
-                UnknownDeckObject.AddCardData(card, card.Amount);
+            UnknownDeckObject.AddCardDataList(unknownDeck);
+            OpenDeckObject.AddCardDataList(openDeck);
+            foreach (List<CardData> cards in knownDeck){
+                CreateDividerDeckObject(cards);
             }
             if (DebugMode){ Debug.Log($"{DebugID} Loaded cards from memory"); }
         }

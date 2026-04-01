@@ -29,7 +29,7 @@ public class CardPrefab : MonoBehaviour
         SetAmount(amount);
 
         Color c = new Color(0f,0f,0f);
-        if (Data.Colour == CardData.CardColour.Yellow){
+        if (Data.Colour == CardData.CardColour.Yellow || Data.Colour == CardData.CardColour.Blue){
             this.CardAmountText.color = c;
             this.CardPercentageText.color = c;
             this.CardNameText.color = c;

@@ -55,6 +55,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void AddCardDataToUnknownDeck(CardData newCard, int amount){
         UnknownDeckObject.AddCardData(newCard, amount);
+        SaveToFile();
     }
     /// <summary>
     /// Called from the CardDataPrefab button
@@ -62,6 +63,7 @@ public class GameManager : MonoBehaviour
     public void AddCardDataToOpenDeck(CardData card, DeckObject deck){
         deck.RemoveCardData(card, 1);
         OpenDeckObject.AddCardData(card, 1);
+        SaveToFile();
     }
 
     /// <summary>
@@ -69,6 +71,7 @@ public class GameManager : MonoBehaviour
      /// </summary>
     public void RemoveCardFromOpenDeck(CardData card){
         OpenDeckObject.RemoveCardData(card, 1);
+        SaveToFile();
     }
 
 
@@ -109,7 +112,7 @@ public class GameManager : MonoBehaviour
         UnknownDeckObject.AddCardDataList(newList);
 
         SaveToFile(); 
-        
+
         OpenCloseSettings();
         if (DebugMode){ Debug.Log($"{DebugID} Pressed Reset month button; Moved all cards to the UnknownDeck"); }
     }
@@ -143,7 +146,7 @@ public class GameManager : MonoBehaviour
                      CreateDividerDeckObject(cards);
                 }
             }
-            if (DebugMode){ Debug.Log($"{DebugID} Loaded cards from memory"); }
+            if (DebugMode){ Debug.Log($"{DebugID} Found file on device, Lloaded cards from memory"); }
         }
         else{
             SaveInitalCardData();

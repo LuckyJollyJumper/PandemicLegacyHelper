@@ -30,6 +30,7 @@ public class PopUp : MonoBehaviour
     /// Seperate function because of the cancel button
     /// </summary>
     public void ClosePopUp(){
+        CardNameInput.text = "";
         this.gameObject.SetActive(false);
     }
 }

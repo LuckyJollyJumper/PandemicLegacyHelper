@@ -105,11 +105,11 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < PreviousKnownDeckObjects.Count; i++){
             newList.AddRange(PreviousKnownDeckObjects[i].EmptyDeck());
         }
+        PreviousKnownDeckObjects = new();
         UnknownDeckObject.AddCardDataList(newList);
 
         SaveToFile(); 
         
-        OpenCloseWarning();
         OpenCloseSettings();
         if (DebugMode){ Debug.Log($"{DebugID} Pressed Reset month button; Moved all cards to the UnknownDeck"); }
     }
@@ -119,6 +119,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void ResetApplication(){
         ResetAllCards(); // Move all cards to UnknownDeck
+        OpenCloseWarning();
         UnknownDeckObject.EmptyDeck(); // Remove all cards from UnknownDeck
         SaveInitalCardData();
         if (DebugMode){ Debug.Log($"{DebugID} Pressed Reset button; Reset the application to starting infection deck"); }
@@ -138,7 +139,9 @@ public class GameManager : MonoBehaviour
             UnknownDeckObject.AddCardDataList(unknownDeck);
             OpenDeckObject.AddCardDataList(openDeck);
             foreach (List<CardData> cards in knownDeck){
-                CreateDividerDeckObject(cards);
+                if (cards.Count > 0){ // Ensure that we do not load in empty dividers
+                     CreateDividerDeckObject(cards);
+                }
             }
             if (DebugMode){ Debug.Log($"{DebugID} Loaded cards from memory"); }
         }

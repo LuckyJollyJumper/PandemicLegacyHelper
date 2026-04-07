@@ -3,24 +3,23 @@ using UnityEngine;
 public class Month : MonoBehaviour
 {
     public enum Months {January, February, March, April, May, June, July, August, September, October, November, December};
-    public Months currentMonth;
+    [SerializeField] private Months currentMonth;
 
-    [SerializeField] private TMPro.TextMeshProUGUI monthText;
+    [SerializeField] private TMPro.TMP_Dropdown monthText;
 
     public void Start(){ 
-        this.monthText = GetComponent<TMPro.TextMeshProUGUI>(); 
+        this.monthText = GetComponent<TMPro.TMP_Dropdown>(); 
         SetMonth(currentMonth);
     }
     public void NextMonth(){
-        if (currentMonth == Months.December){
-            currentMonth = Months.January;
-        } else {
-            currentMonth++;
-        }
-        monthText.text = currentMonth.ToString();
+        if (currentMonth == Months.December){ return; } 
+        else { currentMonth++; }
+        SetMonth(currentMonth);
     }
     public void SetMonth(Months month){
         currentMonth = month;
-        monthText.text = currentMonth.ToString();
+        monthText.value = (int)month;
+        monthText.RefreshShownValue();
+        // monthText.text = currentMonth.ToString();
     }
 }

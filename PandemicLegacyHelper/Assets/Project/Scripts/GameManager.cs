@@ -34,6 +34,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject SettingsObject;
     [SerializeField] private GameObject WarningObject;
     [SerializeField] private GameObject PlayerDeckObject;
+    [SerializeField] private Month MonthDropDownObject;
+
     [Header("Debug")]
     [SerializeField] private bool DebugMode;
     private string DebugID = "[GameManager]";
@@ -116,6 +118,7 @@ public class GameManager : MonoBehaviour
         UnknownDeckObject.AddCardDataList(newList);
 
         SaveToFile(); 
+        MonthDropDownObject.NextMonth();
 
         OpenCloseSettings();
         if (DebugMode){ Debug.Log($"{DebugID} Pressed Reset month button; Moved all cards to the UnknownDeck"); }

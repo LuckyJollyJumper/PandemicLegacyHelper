@@ -24,14 +24,16 @@ public class GameManager : MonoBehaviour
     // [SerializeField] private GameObject DeckObject; // Prefab object that holds a part of the previousKnownDeck
     [SerializeField] private GameObject DividerDeckObject; // Prefab object that holds a part of the previousKnownDeck
     
-    [Header("References")]
+   
     [SerializeField] private DeckObject UnknownDeckObject;
     [SerializeField] private DeckObject PreviousKnownDeckObject;
     [SerializeField] private List<DeckObject> PreviousKnownDeckObjects;
     [SerializeField] private DeckObject OpenDeckObject;
+    [Header("References")]
     [SerializeField] private GameObject PopUpObject;
     [SerializeField] private GameObject SettingsObject;
     [SerializeField] private GameObject WarningObject;
+    [SerializeField] private GameObject PlayerDeckObject;
     [Header("Debug")]
     [SerializeField] private bool DebugMode;
     private string DebugID = "[GameManager]";
@@ -40,6 +42,7 @@ public class GameManager : MonoBehaviour
         PopUpObject.SetActive(false);
         SettingsObject.SetActive(false);
         WarningObject.SetActive(false);
+        PlayerDeckObject.SetActive(false);
 
         LoadFromFile();
     }
@@ -83,6 +86,7 @@ public class GameManager : MonoBehaviour
     public void OpenClosePopUp(){ PopUpObject.SetActive(!SettingsObject.activeSelf); }
     public void OpenCloseSettings(){ SettingsObject.SetActive(!SettingsObject.activeSelf); }
     public void OpenCloseWarning(){ WarningObject.SetActive(!WarningObject.activeSelf); }
+    public void OpenClosePlayerDeck(){ PlayerDeckObject.SetActive(!PlayerDeckObject.activeSelf); }
 
     /// <summary>
     /// Called by the Pandemic button. Puts all cards from the OpenDeck into the PreviousKnowndeck

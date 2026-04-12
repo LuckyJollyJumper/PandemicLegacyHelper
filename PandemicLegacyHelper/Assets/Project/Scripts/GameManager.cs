@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UnityEngine.UI;
 
 /// <summary>
 /// An interactable object that starts an activity when interacted with.
@@ -31,9 +32,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private DeckObject OpenDeckObject;
     [Header("References")]
     [SerializeField] private GameObject PopUpObject;
-    [SerializeField] private GameObject SettingsObject;
-    [SerializeField] private GameObject WarningObject;
-    [SerializeField] private GameObject PlayerDeckObject;
+    [SerializeField] private GameObject SettingsPopUpObject;
+    [SerializeField] private GameObject WarningPopUpObject;
+    [SerializeField] private GameObject PlayerDeckPopUpObject;
+    [SerializeField] private GameObject PlayerDeckButton;
     [SerializeField] private Month MonthDropDownObject;
 
     [Header("Debug")]
@@ -42,9 +44,9 @@ public class GameManager : MonoBehaviour
     
     void Start(){
         PopUpObject.SetActive(false);
-        SettingsObject.SetActive(false);
-        WarningObject.SetActive(false);
-        PlayerDeckObject.SetActive(false);
+        SettingsPopUpObject.SetActive(false);
+        WarningPopUpObject.SetActive(false);
+        PlayerDeckPopUpObject.SetActive(false);
 
         LoadFromFile();
     }
@@ -85,10 +87,17 @@ public class GameManager : MonoBehaviour
     //-----------------------Functions used by buttons----------------------//
     //----------------------------------------------------------------------//
 
-    public void OpenClosePopUp(){ PopUpObject.SetActive(!SettingsObject.activeSelf); }
-    public void OpenCloseSettings(){ SettingsObject.SetActive(!SettingsObject.activeSelf); }
-    public void OpenCloseWarning(){ WarningObject.SetActive(!WarningObject.activeSelf); }
-    public void OpenClosePlayerDeck(){ PlayerDeckObject.SetActive(!PlayerDeckObject.activeSelf); }
+    public void OpenClosePopUp(){ PopUpObject.SetActive(!SettingsPopUpObject.activeSelf); }
+    public void OpenCloseSettings(){ SettingsPopUpObject.SetActive(!SettingsPopUpObject.activeSelf); }
+    public void OpenCloseWarning(){ WarningPopUpObject.SetActive(!WarningPopUpObject.activeSelf); }
+    public void OpenClosePlayerDeck(){ 
+        PlayerDeckPopUpObject.SetActive(!PlayerDeckPopUpObject.activeSelf); 
+        if (PlayerDeckPopUpObject.activeSelf){
+            PlayerDeckButton.GetComponent<Image>().transform.rotation = Quaternion.Euler(0, 0, 180);
+        }else{
+            PlayerDeckButton.GetComponent<Image>().transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+    }
 
     /// <summary>
     /// Called by the Pandemic button. Puts all cards from the OpenDeck into the PreviousKnowndeck
@@ -97,6 +106,8 @@ public class GameManager : MonoBehaviour
         List<CardData> l = OpenDeckObject.EmptyDeck();
         if (l.Count == 0){ return; }
         CreateDividerDeckObject(l);
+        PlayerDeckPopUpObject.GetComponentInChildren<PlayerDeck>().DrawPandemicCard();
+        SaveToFile();
         if (DebugMode){ Debug.Log($"{DebugID} Pressed Pandemic button; Moved all cards in Open Deck to PreviousKnownDeck"); }
     }
     private void CreateDividerDeckObject(List<CardData> cardList){
@@ -110,9 +121,30 @@ public class GameManager : MonoBehaviour
     /// Will move all cards to UnknownDeck to reset to start a new month. Called from the Settings resetMonth button
     /// </summary>
     public void ResetAllCards(){
+        if (OpenDeckObject == null){
+            Debug.LogError($"{DebugID} OpenDeckObject is null in ResetAllCards");
+            return;
+        }
+        if (UnknownDeckObject == null){
+            Debug.LogError($"{DebugID} UnknownDeckObject is null in ResetAllCards");
+            return;
+        }
+        if (MonthDropDownObject == null){
+            Debug.LogError($"{DebugID} MonthDropDownObject is null in ResetAllCards");
+            return;
+        }
+        if (PreviousKnownDeckObjects == null){
+            PreviousKnownDeckObjects = new List<DeckObject>();
+        }
+
         List<CardData> newList = OpenDeckObject.EmptyDeck();
         for (int i = 0; i < PreviousKnownDeckObjects.Count; i++){
-            newList.AddRange(PreviousKnownDeckObjects[i].EmptyDeck());
+            if (PreviousKnownDeckObjects[i] != null){
+                newList.AddRange(PreviousKnownDeckObjects[i].EmptyDeck());
+            }
+            else if (DebugMode){
+                Debug.LogWarning($"{DebugID} Skipping null PreviousKnownDeckObjects[{i}] in ResetAllCards");
+            }
         }
         PreviousKnownDeckObjects = new();
         UnknownDeckObject.AddCardDataList(newList);
@@ -135,17 +167,31 @@ public class GameManager : MonoBehaviour
         if (DebugMode){ Debug.Log($"{DebugID} Pressed Reset button; Reset the application to starting infection deck"); }
     }
 
+    /// <summary>
+    /// Called by button and converts sring to integer
+    /// </summary>
+    public void SetPlayerCards(string cards){
+        if (int.TryParse(cards, out int result)){
+            PlayerDeckPopUpObject.GetComponentInChildren<PlayerDeck>().SetPlayerDeckSize(result);
+                if (DebugMode){ Debug.Log($"{DebugID} Set player deck size to {result}"); }
+        }
+        else{
+            Debug.LogError($"Could not parse {cards} to an integer");
+        }
+        OpenClosePlayerDeck();
+    }
 
 
     //----------------------------------------------------------------------//
     //-----------Functions for starting and stopping application------------//
     //----------------------------------------------------------------------//
     public void SaveToFile(){
-        CardDataSaver.SaveToFile(UnknownDeckObject, PreviousKnownDeckObjects, OpenDeckObject);
+        CardDataSaver.SaveToFile(UnknownDeckObject, PreviousKnownDeckObjects, OpenDeckObject, (int)MonthDropDownObject.CurrentMonth);
     }
     public void LoadFromFile(){
-        (bool exists, List<CardData> unknownDeck, List<List<CardData>> knownDeck, List<CardData> openDeck) = CardDataSaver.LoadFromFile();
+        (bool exists, List<CardData> unknownDeck, List<List<CardData>> knownDeck, List<CardData> openDeck, int monthIndex) = CardDataSaver.LoadFromFile();
         if (exists){
+            MonthDropDownObject.SetMonth((Month.Months)monthIndex);
             UnknownDeckObject.AddCardDataList(unknownDeck);
             OpenDeckObject.AddCardDataList(openDeck);
             foreach (List<CardData> cards in knownDeck){
@@ -153,7 +199,7 @@ public class GameManager : MonoBehaviour
                      CreateDividerDeckObject(cards);
                 }
             }
-            if (DebugMode){ Debug.Log($"{DebugID} Found file on device, Lloaded cards from memory"); }
+            if (DebugMode){ Debug.Log($"{DebugID} Found file on device, loaded cards from memory"); }
         }
         else{
             SaveInitalCardData();

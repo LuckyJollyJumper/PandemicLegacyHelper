@@ -4,6 +4,7 @@ public class Month : MonoBehaviour
 {
     public enum Months {January, February, March, April, May, June, July, August, September, October, November, December};
     [SerializeField] private Months currentMonth;
+    public Months CurrentMonth => currentMonth;
 
     [SerializeField] private TMPro.TMP_Dropdown monthText;
 
@@ -21,5 +22,10 @@ public class Month : MonoBehaviour
         monthText.value = (int)month;
         monthText.RefreshShownValue();
         // monthText.text = currentMonth.ToString();
+    }
+
+    public void SetMonth(){
+        currentMonth = (Months)monthText.value;
+        monthText.RefreshShownValue();
     }
 }

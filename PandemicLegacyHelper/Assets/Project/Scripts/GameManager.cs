@@ -171,6 +171,7 @@ public class GameManager : MonoBehaviour
     /// Called by button and converts sring to integer
     /// </summary>
     public void SetPlayerCards(string cards){
+        
         if (int.TryParse(cards, out int result)){
             PlayerDeckPopUpObject.GetComponentInChildren<PlayerDeck>().SetPlayerDeckSize(result);
                 if (DebugMode){ Debug.Log($"{DebugID} Set player deck size to {result}"); }

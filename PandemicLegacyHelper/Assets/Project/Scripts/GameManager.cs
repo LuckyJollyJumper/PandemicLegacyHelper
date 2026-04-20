@@ -121,18 +121,6 @@ public class GameManager : MonoBehaviour
     /// Will move all cards to UnknownDeck to reset to start a new month. Called from the Settings resetMonth button
     /// </summary>
     public void ResetAllCards(){
-        if (OpenDeckObject == null){
-            Debug.LogError($"{DebugID} OpenDeckObject is null in ResetAllCards");
-            return;
-        }
-        if (UnknownDeckObject == null){
-            Debug.LogError($"{DebugID} UnknownDeckObject is null in ResetAllCards");
-            return;
-        }
-        if (MonthDropDownObject == null){
-            Debug.LogError($"{DebugID} MonthDropDownObject is null in ResetAllCards");
-            return;
-        }
         if (PreviousKnownDeckObjects == null){
             PreviousKnownDeckObjects = new List<DeckObject>();
         }
@@ -184,6 +172,9 @@ public class GameManager : MonoBehaviour
             Debug.LogError($"Could not parse '{cards}' to an integer");
         }
         OpenClosePlayerDeck();
+    }
+    public void SetPandemicCards(string cards){
+        PlayerDeckPopUpObject.GetComponentInChildren<PlayerDeck>(true).SetPandemicCards(int.TryParse(cards, out int result) ? result : 0);
     }
 
 

@@ -31,8 +31,8 @@ public class SinglePlayerDeck : MonoBehaviour
     public void SetActiveCurrentDrawPile(bool active){
         if (active){
             CurrentDrawPileObject.GetComponent<Image>().color = Color.red;
-            AfterPandemicCardObject.GetComponent<Image>().color = Color.blue;
-            BeforePandemicCardObject.GetComponent<Image>().color = Color.blue;
+            AfterPandemicCardObject.GetComponent<Image>().color = new Color(0.56f, 0.56f, 0.56f); //#90908F
+            BeforePandemicCardObject.GetComponent<Image>().color = new Color(0.56f, 0.56f, 0.56f);
         }
         else{ CurrentDrawPileObject.GetComponent<Image>().color = new Color(1, 1, 1, 0); }
     }

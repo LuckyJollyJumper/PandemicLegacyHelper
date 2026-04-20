@@ -4,7 +4,7 @@ using System;
 
 public class PlayerDeck : MonoBehaviour
 {
-    private int PlayerDeckSize = 40;
+    private int PlayerDeckSize = 80; // Includes pandemic cards!!!!!
     private int PandemicDeckSize; // Size of the part of the playerDeck that holds a single pandemic card
     private int NumberOfPandemicCards = 10; // Number of pandemic cards in the playerDeck
     private List<SinglePlayerDeck> SingleDecks = new List<SinglePlayerDeck>(); // List to hold the sizes of each pandemic deck
@@ -15,18 +15,20 @@ public class PlayerDeck : MonoBehaviour
     private bool PandemicCardDrawn = false; // only used per SinglePlayerDeck
     [Header("Debug")]
     [SerializeField] private bool DebugMode = false;
-    [SerializeField] private string DebugID = "[PlayerDeck]";
+    private string DebugID = "[PlayerDeck]";
 
     public void Start(){
-        // All placeholders
-        PlayerDeckSize = 80;
-        NumberOfPandemicCards = 10;
+        SetPlayerDeckSize(PlayerDeckSize);
+    }
 
+    public void SetPandemicCards(int number){
+        PlayerDeckSize -= NumberOfPandemicCards;
+        NumberOfPandemicCards = number;
         SetPlayerDeckSize(PlayerDeckSize);
     }
 
     public void SetPlayerDeckSize(int size){
-        PlayerDeckSize = size;
+        PlayerDeckSize = size + NumberOfPandemicCards;
         SetPandemicDeckSize();
         CalculateProbability();
     }
@@ -35,17 +37,15 @@ public class PlayerDeck : MonoBehaviour
     /// Only used as a setup
     /// </summary>
     public void SetPandemicDeckSize(){
-        for (int i = SingleDecks.Count - 1; i >= 0; i--){
-            if (SingleDecks[i] != null){
-                Destroy(SingleDecks[i].gameObject);
-            }
-        }
-        SingleDecks.Clear();
+        ClearSingleDecks();
 
         PandemicDeckSize = PlayerDeckSize / NumberOfPandemicCards;
-        int quotient = PlayerDeckSize / NumberOfPandemicCards;
-        int remainder = PlayerDeckSize % NumberOfPandemicCards;
+        // This is the base size of each pandemic deck that holds 1 pandemic card, 
+        int quotient = PlayerDeckSize / NumberOfPandemicCards; 
+        // This is the number of pandemic decks that need to have 1 extra card added to account for any leftover cards after equal distribution
+        int remainder = PlayerDeckSize % NumberOfPandemicCards; 
         if (DebugMode) {
+            Debug.Log($"{DebugID} Number of Pandemic Cards: {NumberOfPandemicCards}");
             Debug.Log($"{DebugID} Player Deck Size: {PlayerDeckSize}, Pandemic Deck Size: {PandemicDeckSize}, Quotient: {quotient}, Remainder: {remainder}");
         }
 
@@ -70,6 +70,15 @@ public class PlayerDeck : MonoBehaviour
         if (SingleDecks.Count > 0){
             SingleDecks[0].SetActiveCurrentDrawPile(true);
         }
+    }
+
+    private void ClearSingleDecks(){
+        for (int i = SingleDecks.Count - 1; i >= 0; i--){
+            if (SingleDecks[i] != null){
+                Destroy(SingleDecks[i].gameObject);
+            }
+        }
+        SingleDecks.Clear();
     }
 
 

@@ -171,13 +171,17 @@ public class GameManager : MonoBehaviour
     /// Called by button and converts sring to integer
     /// </summary>
     public void SetPlayerCards(string cards){
-        
+        cards = cards?.Trim() ?? string.Empty;
         if (int.TryParse(cards, out int result)){
-            PlayerDeckPopUpObject.GetComponentInChildren<PlayerDeck>().SetPlayerDeckSize(result);
+            PlayerDeck playerDeck = PlayerDeckPopUpObject.GetComponentInChildren<PlayerDeck>(true);
+            if (playerDeck != null){
+                playerDeck.SetPlayerDeckSize(result);
                 if (DebugMode){ Debug.Log($"{DebugID} Set player deck size to {result}"); }
+            }
+            else{ Debug.LogError($"{DebugID} Could not find PlayerDeck component inside PlayerDeckPopUpObject"); }
         }
         else{
-            Debug.LogError($"Could not parse {cards} to an integer");
+            Debug.LogError($"Could not parse '{cards}' to an integer");
         }
         OpenClosePlayerDeck();
     }

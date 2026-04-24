@@ -4,7 +4,8 @@ using System;
 using UnityEngine.UI;
 
 /// <summary>
-/// An interactable object that starts an activity when interacted with.
+/// The main class that controls the application, holds references to all decks and popups and is used to move cards between decks 
+/// and open/close popups. Also handles saving and loading from file.
 /// </summary>
 public class GameManager : MonoBehaviour
 {
@@ -22,12 +23,12 @@ public class GameManager : MonoBehaviour
             return instance;
         }
     }
-    // [SerializeField] private GameObject DeckObject; // Prefab object that holds a part of the previousKnownDeck
-    [SerializeField] private GameObject DividerDeckObject; // Prefab object that holds a part of the previousKnownDeck
     
-   
-    [SerializeField] private DeckObject UnknownDeckObject;
+    [Header("Prefabs")]
+    [SerializeField] private GameObject DividerDeckObject; // Prefab object that holds a part of the previousKnownDeck
     [SerializeField] private DeckObject PreviousKnownDeckObject;
+    [Header("Deck Objects")]
+    [SerializeField] private DeckObject UnknownDeckObject;
     [SerializeField] private List<DeckObject> PreviousKnownDeckObjects;
     [SerializeField] private DeckObject OpenDeckObject;
     [Header("References")]

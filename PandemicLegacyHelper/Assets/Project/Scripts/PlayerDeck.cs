@@ -2,9 +2,12 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 
+/// <summary>
+/// Class that controls the player deck and all its visuals
+/// </summary>
 public class PlayerDeck : MonoBehaviour
 {
-    private int PlayerDeckSize = 80; // Includes pandemic cards!!!!!
+    private int PlayerDeckSize = 80; // Does not include pandemic cards!
     private int PandemicDeckSize; // Size of the part of the playerDeck that holds a single pandemic card
     private int NumberOfPandemicCards = 10; // Number of pandemic cards in the playerDeck
     private List<SinglePlayerDeck> SingleDecks = new List<SinglePlayerDeck>(); // List to hold the sizes of each pandemic deck
@@ -105,7 +108,11 @@ public class PlayerDeck : MonoBehaviour
         }
     }
 
-    public void CalculateProbability(){
+    /// <summary>
+    /// Sets the text to either show the probability of drawing a pandemic card in the next draw or else how many cards are 
+    /// left that are safe.
+    /// </summary>
+    private void CalculateProbability(){
         if (SingleDecks.Count == 0){
             TextObject.text = "No player deck configured";
             return;
@@ -135,9 +142,7 @@ public class PlayerDeck : MonoBehaviour
     /// Returns (singleDeckIndex, cardIndex), where cardIndex is the index of the card in the current singleDeck that the game
     /// is in. 
     /// </summary>
-    /// <param name="index"></param>
-    /// <returns></returns>
-    public (int, int) GetCurrentPandemicDeckIndex(int index){
+    private (int, int) GetCurrentPandemicDeckIndex(int index){
         if (SingleDecks.Count == 0){
             return (-1, -1);
         }
@@ -159,7 +164,7 @@ public class PlayerDeck : MonoBehaviour
     /// <summary>
     /// Returns whether we just moved into a new pandemic deck with the previous draw of 2 cards
     /// </summary>
-    public bool GotIntoNewPandemicDeck(){
+    private bool GotIntoNewPandemicDeck(){
         int previousIndexArg = Mathf.Max(CurrentDrawnCards - 2, 0);
         (int i ,_) = GetCurrentPandemicDeckIndex(CurrentDrawnCards);
         (int pi, _) = GetCurrentPandemicDeckIndex(previousIndexArg);

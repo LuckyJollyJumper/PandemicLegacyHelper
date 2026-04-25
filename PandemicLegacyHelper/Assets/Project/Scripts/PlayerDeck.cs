@@ -84,26 +84,38 @@ public class PlayerDeck : MonoBehaviour
         SingleDecks.Clear();
     }
 
-
+    /// <summary>
+    /// Draws 2 cards from the player deck and updates the visuals accordingly. If a new pandemic deck is reached, 
+    /// it updates the pandemic card visuals as well.
+    /// </summary>
     public void DrawCards(){
-        if (CurrentDrawnCards >= PlayerDeckSize){ return; }
+        if (CurrentDrawnCards >= PlayerDeckSize){ return; } // Ignore inputs if the deck is already fully drawn
         CurrentDrawnCards += 2;
+
         if(GotIntoNewPandemicDeck()){ 
             PandemicCardDrawn = false; 
-            (int i ,_) = GetCurrentPandemicDeckIndex(CurrentDrawnCards);
+            (int i , int cardIndex) = GetCurrentPandemicDeckIndex(CurrentDrawnCards);
             SingleDecks[i].SetActiveCurrentDrawPile(true);
+            SingleDecks[i].AddDrawnCards(cardIndex);
             if (i-1 >= 0){
                 SingleDecks[i-1].SetActiveCurrentDrawPile(false);
             }
         }
+        else
+        {
+            (int i , int cardIndex) = GetCurrentPandemicDeckIndex(CurrentDrawnCards);
+            SingleDecks[i].AddDrawnCards(cardIndex);
+        }
         CalculateProbability();
+        if (DebugMode) { Debug.Log($"{DebugID} Drawn Cards: {CurrentDrawnCards}, Current Pandemic Deck Index: {GetCurrentPandemicDeckIndex(CurrentDrawnCards).Item1}, Card Index in Pandemic Deck: {GetCurrentPandemicDeckIndex(CurrentDrawnCards).Item2}"); }
     }
     public void DrawPandemicCard(){
         PandemicCardDrawn = true;
         if (CurrentDrawnCards < PlayerDeckSize){
-            Debug.Log($"Pandemic card drawn");
+            if (DebugMode) { Debug.Log($"{DebugID} Pandemic card drawn"); }
             (int deckIndex, int cardIndex) = GetCurrentPandemicDeckIndex(CurrentDrawnCards);
             SingleDecks[deckIndex].DrawPandemicCard();
+            SingleDecks[deckIndex].AddDrawnCards(cardIndex);
             DrawCards();
         }
     }
@@ -134,7 +146,7 @@ public class PlayerDeck : MonoBehaviour
             TextObject.text = $"Safe for {deckSize - cardIndex} cards";
         }
         else{
-            TextObject.text = $"Probability of Pandemic Card in next draw: {MathF.Round(2f / (float)(deckSize - cardIndex) * 100, 1)}%";
+            TextObject.text = $"Pandemic Card next draw: {MathF.Round(2f / (float)(deckSize - cardIndex) * 100, 1)}% 1/{deckSize - cardIndex}";
         }
     }
 

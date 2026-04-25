@@ -25,6 +25,15 @@ public class SinglePlayerDeck : MonoBehaviour
         DeckSize = size;
         BeforePandemicCardObject.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = DeckSize.ToString();
     }
+    public void AddDrawnCards(int amount){
+        if (DrawnCards + amount > DeckSize){
+            DrawnCards = DeckSize;
+        }
+        else{
+            DrawnCards += amount;
+        }
+    }
+
     public int GetDeckSize(){ return DeckSize; }
 
     /// <summary>
@@ -34,8 +43,9 @@ public class SinglePlayerDeck : MonoBehaviour
     public void DrawPandemicCard(){
         PandemicCardObject.SetActive(true);
         AfterPandemicCardObject.SetActive(true);
-        BeforePandemicCardObject.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = (DrawnCards + 2).ToString();
-        AfterPandemicCardObject.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = (DeckSize - DrawnCards - 2).ToString();
+        AddDrawnCards(1); 
+        BeforePandemicCardObject.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = DrawnCards.ToString();
+        AfterPandemicCardObject.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = (DeckSize - DrawnCards).ToString();
     }
 
     /// <summary>

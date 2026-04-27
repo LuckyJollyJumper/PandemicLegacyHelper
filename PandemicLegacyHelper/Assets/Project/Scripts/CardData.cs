@@ -6,7 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class CardData
 {
-    public enum CardColour {Blue, Black, Yellow, Green};
+    public enum CardColour {Blue, Black, Yellow, Green, Red};
 
     public string CardName;
     public CardColour Colour;
@@ -34,6 +34,7 @@ public class CardData
             CardData.CardColour.Black => new Color(0.1f, 0.1f, 0.1f), //#484848
             CardData.CardColour.Yellow => new Color(0.976f, 0.819f, 0.325f), //#f9d153
             CardData.CardColour.Green => new Color(0.24f, 0.56f, 0.302f), //#3D8F4D
+            CardData.CardColour.Red => new Color(0.894f, 0.284f, 0.284f), //#E44848
             _ => new Color(64f,64f,64f)
         };
     }

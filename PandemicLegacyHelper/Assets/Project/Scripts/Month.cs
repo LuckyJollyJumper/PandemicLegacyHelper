@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Class that handles and represents a month.
+/// </summary>
 public class Month : MonoBehaviour
 {
     public enum Months {January, February, March, April, May, June, July, August, September, October, November, December};

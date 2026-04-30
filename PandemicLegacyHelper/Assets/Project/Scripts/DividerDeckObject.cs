@@ -14,6 +14,9 @@ public class DividerDeckObject : DeckObject
         }
     }
 
+    /// <summary>
+    /// Used to remove the dividerObject when the list gets emptied
+    /// </summary>
     public override List<CardData> EmptyDeck(){
         List<CardData> deck = base.EmptyDeck();
         Destroy(this.gameObject);

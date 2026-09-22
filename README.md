@@ -6,7 +6,7 @@ This tool has been made in [Unity](https://unity.com/) and meant to be used on a
 
 ## Guide
 
-This app can be dowloaded from this repository by downloading one of the files in `/Build` as APK or ... . A playable version on Itch.io can be accessed here ...
+This app can be dowloaded from this repository by downloading one of the files in `/Build` as APK. A playable version will be uploaded to  Itch.io soon. If not, send me a message.
 
 ### Draw Piles
 
@@ -44,6 +44,12 @@ The game saves all your cards whenever a change is done in one of the decks.
 
 Resetting for the new month can be accessed via the settings button (Cog in the upper right). This will return all active cards in all decks back to the `Draw Pile`. The settings also have a button to reset all cards to the infection cards present at the start of the game.
 
+### Tracking pandemic cards
+
+The application also has a dropdown on the right upper corner that helps you track what change you have of drawing a pandemic card and in which pandemic card pile you currently are. This needs to be done manually by pressing `Draw 2 cards` to simulate a turn ending of a new player. The `Pandemic` button will update this overview automatically.
+
+![Image](https://github.com/LuckyJollyJumper/PandemicLegacyHelper/blob/main/ScreenShots/TrackingPandemicCards.jpeg?raw=true)
+
 ## Contributing
 
 If you want to help or have any ideas to extend this application for more of the games, you can do so by reporting a bug or suggesting new features. Anything is welcome!
@@ -58,7 +64,5 @@ If you believe this repository infringes your intellectual property rights or co
 Last updated: March 29, 2026
 
 ## TODO
-- Fix PopUp Dropdown sizes
-- Update UI
-- Add special stickers to cards
+- Add internal state to track changes and undo button for misclicks.
 

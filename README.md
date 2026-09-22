@@ -48,7 +48,7 @@ Resetting for the new month can be accessed via the settings button (Cog in the 
 
 The application also has a dropdown on the right upper corner that helps you track what change you have of drawing a pandemic card and in which pandemic card pile you currently are. This needs to be done manually by pressing `Draw 2 cards` to simulate a turn ending of a new player. The `Pandemic` button will update this overview automatically.
 
-![Image](https://github.com/LuckyJollyJumper/PandemicLegacyHelper/blob/main/ScreenShots/TrackingPandemicCards.jpeg?raw=true)
+![Image](https://github.com/LuckyJollyJumper/PandemicLegacyHelper/blob/main/ScreenShots/TrackingPandemicCards.jpg?raw=true)
 
 ## Contributing
 
